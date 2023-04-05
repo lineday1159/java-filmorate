@@ -28,7 +28,7 @@ public class FilmController {
         if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
             log.info("дата релиза — не раньше 28 декабря 1895 года");
             throw new ValidationException("дата релиза — не раньше 28 декабря 1895 года");
-        }  else {
+        } else {
             film.setId(currentId);
             films.put(film.getId(), film);
             currentId++;
@@ -46,8 +46,8 @@ public class FilmController {
             currentFilm.setReleaseDate(film.getReleaseDate());
             currentFilm.setName(film.getName());
         } else {
-            log.info("Фильм не найден с ID - {}",film.getId());
-            throw new ValidationException("Фильм не найден с ID - "+film.getId());
+            log.info("Фильм не найден с ID - {}", film.getId());
+            throw new ValidationException("Фильм не найден с ID - " + film.getId());
         }
         return films.get(film.getId());
     }

@@ -51,8 +51,8 @@ public class UserController {
             currentUser.setLogin(user.getLogin());
             currentUser.setEmail(user.getEmail());
         } else {
-            log.info("Пользователь не найден с ID - {}",user.getId());
-            throw new ValidationException("Пользователь не найден с ID - "+user.getId());
+            log.info("Пользователь не найден с ID - {}", user.getId());
+            throw new ValidationException("Пользователь не найден с ID - " + user.getId());
         }
         return users.get(user.getId());
     }
