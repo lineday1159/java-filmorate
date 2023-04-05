@@ -46,8 +46,8 @@ public class FilmController {
             currentFilm.setReleaseDate(film.getReleaseDate());
             currentFilm.setName(film.getName());
         } else {
-            log.info("Фильм с данным ID не найден");
-            throw new ValidationException("Фильм с данным ID не найден");
+            log.info("Фильм не найден с ID - {}",film.getId());
+            throw new ValidationException("Фильм не найден с ID - "+film.getId());
         }
         return films.get(film.getId());
     }
