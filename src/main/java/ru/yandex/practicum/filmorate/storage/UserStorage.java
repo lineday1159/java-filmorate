@@ -6,7 +6,10 @@ import java.util.List;
 
 public interface UserStorage {
     User create(User user);
+
     List<User> findAll();
+
     User update(User user);
+
     User find(Integer id);
 }

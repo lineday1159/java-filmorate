@@ -10,18 +10,6 @@ import ru.yandex.practicum.filmorate.validation.ValidationException;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    public class ErrorResponse {
-        String error;
-
-        public ErrorResponse(String error) {
-            this.error = error;
-        }
-
-        public String getError() {
-            return error;
-        }
-    }
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
@@ -38,6 +26,18 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
         return new ErrorResponse(e.getMessage());
+    }
+
+    public class ErrorResponse {
+        String error;
+
+        public ErrorResponse(String error) {
+            this.error = error;
+        }
+
+        public String getError() {
+            return error;
+        }
     }
 
 }

@@ -41,7 +41,7 @@ public class FilmService {
         return film;
     }
 
-    public List<Film> findPopFilms(Integer size){
+    public List<Film> findPopFilms(Integer size) {
         return inMemoryFilmStorage.findAll().stream()
                 .sorted((p0, p1) -> compare(p0, p1))
                 .limit(size)

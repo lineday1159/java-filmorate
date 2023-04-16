@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
-    private HashMap<Integer, Film> films;
+    private final HashMap<Integer, Film> films;
     private Integer currentId = 0;
 
     public InMemoryFilmStorage() {
