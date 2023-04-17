@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import javax.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -35,7 +37,13 @@ public class FilmController {
     @PostMapping(value = "/films")
     public Film create(@Valid @RequestBody Film film) {
         log.info("Получен post запрос к эндпоинту /films: '{}'", film.toString());
-        return filmStorage.create(film);
+        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
+            log.info("дата релиза — не раньше 28 декабря 1895 года");
+            throw new ValidationException("дата релиза — не раньше 28 декабря 1895 года");
+        }
+        else{
+            return filmStorage.create(film);
+        }
     }
 
     @PutMapping(value = "/films")
