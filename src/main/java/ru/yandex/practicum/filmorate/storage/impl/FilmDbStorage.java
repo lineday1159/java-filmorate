@@ -78,13 +78,13 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "update films set " +
                 "name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ? " +
                 "where id = ?";
-        jdbcTemplate.update(sqlQuery
-                , film.getName()
-                , film.getDescription()
-                , film.getReleaseDate()
-                , film.getDuration()
-                , film.getMpa().getId()
-                , film.getId());
+        jdbcTemplate.update(sqlQuery,
+                 film.getName(),
+                 film.getDescription(),
+                 film.getReleaseDate(),
+                 film.getDuration(),
+                 film.getMpa().getId(),
+                 film.getId());
         if (film.getGenres() != null) {
             String genreSqlQuery = "delete from films_genre where film_id = ?";
             jdbcTemplate.update(genreSqlQuery, film.getId());
@@ -101,12 +101,12 @@ public class FilmDbStorage implements FilmStorage {
             String likeSqlQuery = "delete from films_like where film_id = ?";
             jdbcTemplate.update(likeSqlQuery, film.getId());
 
-            for (Integer UserId : film.getLikes()) {
+            for (Integer userId : film.getLikes()) {
                 likeSqlQuery = "insert into films_like(film_id, user_id) " +
                         "values (?, ?)";
                 jdbcTemplate.update(likeSqlQuery,
                         film.getId(),
-                        UserId);
+                        userId);
             }
         }
 

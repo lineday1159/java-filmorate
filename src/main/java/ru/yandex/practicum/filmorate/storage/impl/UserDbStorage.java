@@ -67,12 +67,12 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "update users set " +
                 "name = ?, login = ?, email = ?, birthday = ? " +
                 "where id = ?";
-        jdbcTemplate.update(sqlQuery
-                , user.getName()
-                , user.getLogin()
-                , user.getEmail()
-                , user.getBirthday()
-                , user.getId());
+        jdbcTemplate.update(sqlQuery,
+                 user.getName(),
+                 user.getLogin(),
+                 user.getEmail(),
+                 user.getBirthday(),
+                 user.getId());
 
         if (user.getFriends() != null) {
             String friendsSqlQuery = "delete from friendship where user_id = ?";
