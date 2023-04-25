@@ -49,7 +49,7 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getGenres() != null) {
             for (Genre genre : film.getGenres()) {
                 log.info(filmId.toString() + '-' + genre.getId().toString());
-                String sqlQuery = "insert into films_genre(film_id, genre_id) " +
+                String sqlQuery = "insert into films_genres(film_id, genre_id) " +
                         "values (?, ?)";
                 jdbcTemplate.update(sqlQuery,
                         filmId,
@@ -86,10 +86,10 @@ public class FilmDbStorage implements FilmStorage {
                  film.getMpa().getId(),
                  film.getId());
         if (film.getGenres() != null) {
-            String genreSqlQuery = "delete from films_genre where film_id = ?";
+            String genreSqlQuery = "delete from films_genres where film_id = ?";
             jdbcTemplate.update(genreSqlQuery, film.getId());
             for (Genre genre : film.getGenres()) {
-                genreSqlQuery = "insert into films_genre(film_id, genre_id) " +
+                genreSqlQuery = "insert into films_genres(film_id, genre_id) " +
                         "values (?, ?)";
                 jdbcTemplate.update(genreSqlQuery,
                         film.getId(),
@@ -98,11 +98,11 @@ public class FilmDbStorage implements FilmStorage {
         }
 
         if (film.getLikes() != null) {
-            String likeSqlQuery = "delete from films_like where film_id = ?";
+            String likeSqlQuery = "delete from films_likes where film_id = ?";
             jdbcTemplate.update(likeSqlQuery, film.getId());
 
             for (Integer userId : film.getLikes()) {
-                likeSqlQuery = "insert into films_like(film_id, user_id) " +
+                likeSqlQuery = "insert into films_likes(film_id, user_id) " +
                         "values (?, ?)";
                 jdbcTemplate.update(likeSqlQuery,
                         film.getId(),
@@ -143,12 +143,12 @@ public class FilmDbStorage implements FilmStorage {
         Integer duration = rs.getInt("duration");
 
         String genreSql = "select g.* \n" +
-                "from films_genre f\n" +
-                "JOIN genre g ON (f.genre_id = g.id)\n" +
+                "from films_genres f\n" +
+                "JOIN genres g ON (f.genre_id = g.id)\n" +
                 "where film_id = ?";
         List<Genre> genreCollection = jdbcTemplate.query(genreSql, (rs1, rowNum) -> makeFilmsGenre(rs1), id);
 
-        String likesSql = "select * from films_like where film_id = ?";
+        String likesSql = "select * from films_likes where film_id = ?";
         List<Integer> usersCollection = jdbcTemplate.query(likesSql, (rs1, rowNum) -> makeFilmsLike(rs1), id);
 
         return new Film(id, name, description, releaseDate, duration, new HashSet<>(genreCollection), new Mpa(mpaId, mpaName), new HashSet<>(usersCollection));

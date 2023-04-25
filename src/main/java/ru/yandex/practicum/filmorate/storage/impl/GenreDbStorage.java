@@ -24,13 +24,13 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public List<Genre> findAll() {
-        String sql = "select * from genre order by id";
+        String sql = "select * from genres order by id";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilmsGenre(rs));
     }
 
     @Override
     public Genre find(Integer id) {
-        String sql = "select * from genre where id = ?";
+        String sql = "select * from genres where id = ?";
 
         List<Genre> genreCollection = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilmsGenre(rs), id);
         if (genreCollection.size() == 1) {

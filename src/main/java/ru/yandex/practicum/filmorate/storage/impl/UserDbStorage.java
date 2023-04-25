@@ -75,10 +75,10 @@ public class UserDbStorage implements UserStorage {
                  user.getId());
 
         if (user.getFriends() != null) {
-            String friendsSqlQuery = "delete from friendship where user_id = ?";
+            String friendsSqlQuery = "delete from friendships where user_id = ?";
             jdbcTemplate.update(friendsSqlQuery, user.getId());
             for (Integer friendId : user.getFriends()) {
-                friendsSqlQuery = "insert into friendship(user_id, friend_id, is_accepted) " +
+                friendsSqlQuery = "insert into friendships(user_id, friend_id, is_accepted) " +
                         "values (?, ?, ?)";
                 jdbcTemplate.update(friendsSqlQuery,
                         user.getId(),
@@ -111,7 +111,7 @@ public class UserDbStorage implements UserStorage {
         String login = rs.getString("login");
         LocalDate birthday = rs.getDate("birthday").toLocalDate();
 
-        String friendsSql = "select * from friendship where user_id = ?";
+        String friendsSql = "select * from friendships where user_id = ?";
         List<Integer> friendsCollection = jdbcTemplate.query(friendsSql, (rs1, rowNum) -> makeUserFriend(rs1), id);
 
         return new User(id, name, email, login, birthday, new HashSet<Integer>(friendsCollection));
