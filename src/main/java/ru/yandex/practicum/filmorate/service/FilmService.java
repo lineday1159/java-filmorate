@@ -15,27 +15,27 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
 
-    private final FilmStorage inMemoryFilmStorage;
-    private final UserStorage inMemoryUserStorage;
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage inMemoryFilmStorage, @Qualifier("userDbStorage") UserStorage inMemoryUserStorage) {
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
-        this.inMemoryUserStorage = inMemoryUserStorage;
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
     public Film addLike(Integer filmId, Integer userId) {
-        Film film = inMemoryFilmStorage.find(filmId);
-        User user = inMemoryUserStorage.find(userId);
+        Film film = filmStorage.find(filmId);
+        User user = userStorage.find(userId);
         Set<Integer> filmLikesId = film.getLikes();
         filmLikesId.add(userId);
         film.setLikes(filmLikesId);
-        return inMemoryFilmStorage.update(film);
+        return filmStorage.update(film);
     }
 
     public Film deleteLike(Integer filmId, Integer userId) {
-        Film film = inMemoryFilmStorage.find(filmId);
-        User user = inMemoryUserStorage.find(userId);
+        Film film = filmStorage.find(filmId);
+        User user = userStorage.find(userId);
         Set<Integer> filmLikesId = film.getLikes();
         filmLikesId.remove(userId);
         film.setLikes(filmLikesId);
@@ -43,13 +43,26 @@ public class FilmService {
     }
 
     public List<Film> findPopFilms(Integer size) {
-        return inMemoryFilmStorage.findAll().stream()
-                .sorted((p0, p1) -> compare(p0, p1))
-                .limit(size)
-                .collect(Collectors.toList());
+        return filmStorage.findAll().stream().sorted((p0, p1) -> compare(p0, p1)).limit(size).collect(Collectors.toList());
     }
 
     private int compare(Film p0, Film p1) {
         return p1.getLikes().size() - p0.getLikes().size(); //прямой порядок сортировки
+    }
+
+    public List<Film> findAll() {
+        return filmStorage.findAll();
+    }
+
+    public Film find(Integer id) {
+        return filmStorage.find(id);
+    }
+
+    public Film create(Film film) {
+        return filmStorage.create(film);
+    }
+
+    public Film update(Film film) {
+        return filmStorage.update(film);
     }
 }

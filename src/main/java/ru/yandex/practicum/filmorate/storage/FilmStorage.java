@@ -13,4 +13,6 @@ public interface FilmStorage {
     Film update(Film film);
 
     Film find(Integer id);
+
+    boolean delete(Integer id);
 }

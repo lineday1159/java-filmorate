@@ -8,4 +8,6 @@ public interface MpaStorage {
     List<Mpa> findAll();
 
     Mpa find(Integer id);
+
+    boolean delete(Integer id);
 }

@@ -2,11 +2,9 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -15,35 +13,33 @@ import java.util.List;
 @Slf4j
 public class UserController {
 
-    private final UserStorage userStorage;
     private final UserService userService;
 
     @Autowired
-    public UserController(@Qualifier("userDbStorage") UserStorage userStorage, UserService userService) {
-        this.userStorage = userStorage;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping("/users")
     public List<User> findAll() {
-        return userStorage.findAll();
+        return userService.findAll();
     }
 
     @GetMapping("/users/{id}")
     public User find(@PathVariable Integer id) {
-        return userStorage.find(id);
+        return userService.find(id);
     }
 
     @PostMapping(value = "/users")
     public User create(@Valid @RequestBody User user) {
         log.info("Получен post запрос к эндпоинту /users: '{}'", user.toString());
-        return userStorage.create(user);
+        return userService.create(user);
     }
 
     @PutMapping(value = "/users")
     public User update(@Valid @RequestBody User user) {
         log.info("Получен put запрос к эндпоинту /users: '{}'", user.toString());
-        return userStorage.update(user);
+        return userService.update(user);
     }
 
     @PutMapping(value = "/users/{id}/friends/{friendId}")

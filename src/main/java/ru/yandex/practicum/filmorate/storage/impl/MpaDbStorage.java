@@ -42,6 +42,17 @@ public class MpaDbStorage implements MpaStorage {
         }
     }
 
+    @Override
+    public boolean delete(Integer id) {
+        String sqlQuery = "update films set " +
+                "mpa_id = null " +
+                "where mpa_id = ?";
+        jdbcTemplate.update(sqlQuery, id);
+
+        sqlQuery = "delete from mpa where id = ?";
+        return jdbcTemplate.update(sqlQuery, id) > 0;
+    }
+
     private Mpa makeFilmsMpa(ResultSet rs) throws SQLException {
         Integer mpaId = rs.getInt("id");
         String mpaName = rs.getString("name");

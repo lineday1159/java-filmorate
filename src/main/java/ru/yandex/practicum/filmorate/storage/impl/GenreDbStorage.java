@@ -41,6 +41,15 @@ public class GenreDbStorage implements GenreStorage {
         }
     }
 
+    @Override
+    public boolean delete(Integer id) {
+        String sqlQuery = "delete from friendships where user_id = ? or friend_id = ?";
+        jdbcTemplate.update(sqlQuery, id);
+
+        sqlQuery = "delete from genres where id = ?";
+        return jdbcTemplate.update(sqlQuery, id) > 0;
+    }
+
     private Genre makeFilmsGenre(ResultSet rs) throws SQLException {
         Integer genreId = rs.getInt("id");
         String genreName = rs.getString("name");

@@ -63,4 +63,23 @@ public class UserService {
         }
         return userFriends;
     }
+
+    public List<User> findAll() {
+        return userStorage.findAll();
+    }
+
+
+    public User find(Integer id) {
+        return userStorage.find(id);
+    }
+
+
+    public User create(User user) {
+        return userStorage.create(user);
+    }
+
+    public User update(User user) {
+        return userStorage.update(user);
+    }
+
 }

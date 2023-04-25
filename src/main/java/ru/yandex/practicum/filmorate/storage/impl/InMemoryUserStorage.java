@@ -40,6 +40,16 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public boolean delete(Integer id) {
+        if (users.containsKey(id)) {
+            users.remove(id);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public List<User> findAll() {
         return new ArrayList<>(users.values());
     }

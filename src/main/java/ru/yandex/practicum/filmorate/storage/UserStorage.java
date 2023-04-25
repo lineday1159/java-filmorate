@@ -12,4 +12,6 @@ public interface UserStorage {
     User update(User user);
 
     User find(Integer id);
+
+    boolean delete(Integer id);
 }

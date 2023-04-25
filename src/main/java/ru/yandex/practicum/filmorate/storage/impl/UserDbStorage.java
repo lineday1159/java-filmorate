@@ -68,11 +68,11 @@ public class UserDbStorage implements UserStorage {
                 "name = ?, login = ?, email = ?, birthday = ? " +
                 "where id = ?";
         jdbcTemplate.update(sqlQuery,
-                 user.getName(),
-                 user.getLogin(),
-                 user.getEmail(),
-                 user.getBirthday(),
-                 user.getId());
+                user.getName(),
+                user.getLogin(),
+                user.getEmail(),
+                user.getBirthday(),
+                user.getId());
 
         if (user.getFriends() != null) {
             String friendsSqlQuery = "delete from friendships where user_id = ?";
@@ -102,6 +102,15 @@ public class UserDbStorage implements UserStorage {
             log.info("Пользователь не найден с ID - {}", id);
             throw new NotFoundException(String.format("Пользователя с id-%d не существует.", id));
         }
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        String sqlQuery = "delete from mpa where id = ?";
+        jdbcTemplate.update(sqlQuery, id);
+
+        sqlQuery = "delete from mpa where id = ?";
+        return jdbcTemplate.update(sqlQuery, id) > 0;
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
