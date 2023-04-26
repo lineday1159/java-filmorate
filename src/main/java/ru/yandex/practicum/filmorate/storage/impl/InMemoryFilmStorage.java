@@ -1,8 +1,10 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Component
+@Qualifier("inMemoryFilmStorage")
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private final HashMap<Integer, Film> films;
@@ -54,6 +57,16 @@ public class InMemoryFilmStorage implements FilmStorage {
         } else {
             log.info("фильм не найден с ID - {}", film.getId());
             throw new NotFoundException(String.format("Фильма с id-\"%d\" не существует.", film.getId()));
+        }
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        if (films.containsKey(id)) {
+            films.remove(id);
+            return true;
+        } else {
+            return false;
         }
     }
 }

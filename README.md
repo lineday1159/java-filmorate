@@ -1,2 +1,4 @@
 # java-filmorate
-Template repository for Filmorate project.
+Back-часть приложения для обмена фильмами)
+## ER - модель
+![sql_sheme](sql_cheme.png)
