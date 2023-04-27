@@ -109,7 +109,7 @@ public class UserDbStorage implements UserStorage {
         String sqlQuery = "delete from mpa where id = ?";
         jdbcTemplate.update(sqlQuery, id);
 
-        sqlQuery = "delete from mpa where id = ?";
+        sqlQuery = "delete from users where id = ?";
         return jdbcTemplate.update(sqlQuery, id) > 0;
     }
 
