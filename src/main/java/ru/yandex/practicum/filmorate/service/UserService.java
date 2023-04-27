@@ -82,4 +82,7 @@ public class UserService {
         return userStorage.update(user);
     }
 
+    public boolean delete(Integer userId) {
+        return userStorage.delete(userId);
+    }
 }
