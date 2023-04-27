@@ -34,12 +34,9 @@ public class FilmService {
     }
 
     public Film deleteLike(Integer filmId, Integer userId) {
-        Film film = filmStorage.find(filmId);
-        User user = userStorage.find(userId);
-        Set<Integer> filmLikesId = film.getLikes();
-        filmLikesId.remove(userId);
-        film.setLikes(filmLikesId);
-        return film;
+        filmStorage.find(filmId);
+        userStorage.find(userId);
+        return filmStorage.deleteLikes(filmId, userId);
     }
 
     public List<Film> findPopFilms(Integer size) {
@@ -64,5 +61,11 @@ public class FilmService {
 
     public Film update(Film film) {
         return filmStorage.update(film);
+    }
+
+    public List<Film> findCommonFriends(Integer userId, Integer friendId) {
+        return filmStorage.findCommonFilms(userId, friendId).stream()
+                .sorted(this::compare)
+                .collect(Collectors.toList());
     }
 }

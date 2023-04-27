@@ -15,10 +15,8 @@ import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Qualifier("filmDbStorage")
@@ -84,6 +82,32 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public Film deleteLikes(Integer filmId, Integer userId) {
+        jdbcTemplate.update("delete from films_likes where film_id = ? and user_id = ?", filmId, userId);
+        return find(filmId);
+    }
+
+    @Override
+    public List<Film> findCommonFilms(Integer userId, Integer friendId) {
+        String usersLikesSql = "select * from films_likes where user_id = ?";
+        Collection<Integer> usersFilmsId = jdbcTemplate.query(
+                usersLikesSql,
+                (rs, rowNum) ->
+                        rs.getInt("film_id"), userId
+        );
+        String friendsLikesSql = "select * from films_likes where user_id = ?";
+        Collection<Integer> friendsFilmsId = jdbcTemplate.query(
+                friendsLikesSql,
+                (rs, rowNum) ->
+                        rs.getInt("film_id"), friendId
+        );
+        return usersFilmsId.stream()
+                .filter(x -> friendsFilmsId.contains(x))
+                .map(x -> find(x))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Film update(Film film) {
         find(film.getId());
 
@@ -91,12 +115,12 @@ public class FilmDbStorage implements FilmStorage {
                 "name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ? " +
                 "where id = ?";
         jdbcTemplate.update(sqlQuery,
-                 film.getName(),
-                 film.getDescription(),
-                 film.getReleaseDate(),
-                 film.getDuration(),
-                 film.getMpa().getId(),
-                 film.getId());
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getId());
         if (film.getGenres() != null) {
             String genreSqlQuery = "delete from films_genres where film_id = ?";
             jdbcTemplate.update(genreSqlQuery, film.getId());

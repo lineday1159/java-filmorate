@@ -59,7 +59,12 @@ public class FilmController {
     }
 
     @GetMapping(value = "/films/popular")
-    public List<Film> deleteLike(@RequestParam(defaultValue = "10") int count) {
+    public List<Film> findPopFilms(@RequestParam(defaultValue = "10") int count) {
         return filmService.findPopFilms(count);
+    }
+
+    @GetMapping(value = "/films/common")
+    public List<Film> getCommonFilm(@RequestParam Integer userId, @RequestParam Integer friendId) {
+        return filmService.findCommonFriends(userId, friendId);
     }
 }
