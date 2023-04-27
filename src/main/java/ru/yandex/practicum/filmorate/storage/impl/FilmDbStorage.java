@@ -15,10 +15,8 @@ import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Qualifier("filmDbStorage")
@@ -81,6 +79,26 @@ public class FilmDbStorage implements FilmStorage {
 
         sqlQuery = "delete from films where id = ?";
         return jdbcTemplate.update(sqlQuery, id) > 0;
+    }
+
+    @Override
+    public List<Film> findCommonFilms(Integer userId, Integer friendId) {
+        String usersLikesSql = "select * from films_likes where user_id = ?";
+        Collection<Integer> usersFilmsId = jdbcTemplate.query(
+                usersLikesSql,
+                (rs, rowNum) ->
+                        rs.getInt("film_id"), userId
+        );
+        String friendsLikesSql = "select * from films_likes where user_id = ?";
+        Collection<Integer> friendsFilmsId = jdbcTemplate.query(
+                friendsLikesSql,
+                (rs, rowNum) ->
+                        rs.getInt("film_id"), friendId
+        );
+        return usersFilmsId.stream()
+                .filter(x -> friendsFilmsId.contains(x))
+                .map(x -> find(x))
+                .collect(Collectors.toList());
     }
 
     @Override

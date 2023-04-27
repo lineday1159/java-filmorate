@@ -15,4 +15,6 @@ public interface FilmStorage {
     Film find(Integer id);
 
     boolean delete(Integer id);
+
+    List<Film> findCommonFilms(Integer userId, Integer friendId);
 }
