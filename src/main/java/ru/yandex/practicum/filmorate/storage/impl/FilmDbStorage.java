@@ -109,12 +109,12 @@ public class FilmDbStorage implements FilmStorage {
                 "name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ? " +
                 "where id = ?";
         jdbcTemplate.update(sqlQuery,
-                 film.getName(),
-                 film.getDescription(),
-                 film.getReleaseDate(),
-                 film.getDuration(),
-                 film.getMpa().getId(),
-                 film.getId());
+                film.getName(),
+                film.getDescription(),
+                film.getReleaseDate(),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getId());
         if (film.getGenres() != null) {
             String genreSqlQuery = "delete from films_genres where film_id = ?";
             jdbcTemplate.update(genreSqlQuery, film.getId());

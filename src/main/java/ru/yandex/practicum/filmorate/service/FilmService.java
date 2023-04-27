@@ -65,6 +65,7 @@ public class FilmService {
     public Film update(Film film) {
         return filmStorage.update(film);
     }
+
     public List<Film> findCommonFriends(Integer userId, Integer friendId) {
         return filmStorage.findCommonFilms(userId, friendId).stream()
                 .sorted(this::compare)
