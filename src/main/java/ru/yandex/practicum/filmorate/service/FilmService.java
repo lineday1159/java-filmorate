@@ -67,7 +67,8 @@ public class FilmService {
         return filmStorage.findCommonFilms(userId, friendId).stream().sorted(this::compare).collect(Collectors.toList());
     }
 
-    public boolean delete(Integer filmId) {
-        return filmStorage.delete(filmId);
+    public boolean delete(Integer id) {
+        filmStorage.find(id);
+        return filmStorage.delete(id);
     }
 }

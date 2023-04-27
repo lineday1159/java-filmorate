@@ -106,8 +106,8 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public boolean delete(Integer id) {
-        String sqlQuery = "delete from mpa where id = ?";
-        jdbcTemplate.update(sqlQuery, id);
+        String sqlQuery = "delete from friendships where friend_id = ? or user_id = ?";
+        jdbcTemplate.update(sqlQuery, id, id);
 
         sqlQuery = "delete from users where id = ?";
         return jdbcTemplate.update(sqlQuery, id) > 0;

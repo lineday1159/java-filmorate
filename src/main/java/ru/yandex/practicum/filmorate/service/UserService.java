@@ -73,7 +73,6 @@ public class UserService {
         return userStorage.find(id);
     }
 
-
     public User create(User user) {
         return userStorage.create(user);
     }
@@ -82,7 +81,8 @@ public class UserService {
         return userStorage.update(user);
     }
 
-    public boolean delete(Integer userId) {
-        return userStorage.delete(userId);
+    public boolean delete(Integer id) {
+        userStorage.find(id);
+        return userStorage.delete(id);
     }
 }
