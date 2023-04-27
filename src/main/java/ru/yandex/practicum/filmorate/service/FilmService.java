@@ -34,12 +34,9 @@ public class FilmService {
     }
 
     public Film deleteLike(Integer filmId, Integer userId) {
-        Film film = filmStorage.find(filmId);
-        User user = userStorage.find(userId);
-        Set<Integer> filmLikesId = film.getLikes();
-        filmLikesId.remove(userId);
-        film.setLikes(filmLikesId);
-        return film;
+        filmStorage.find(filmId);
+        userStorage.find(userId);
+        return filmStorage.deleteLikes(filmId, userId);
     }
 
     public List<Film> findPopFilms(Integer size) {

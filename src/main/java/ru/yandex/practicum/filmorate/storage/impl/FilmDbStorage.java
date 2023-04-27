@@ -82,6 +82,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public Film deleteLikes(Integer filmId, Integer userId) {
+        jdbcTemplate.update("delete from films_likes where film_id = ? and user_id = ?", filmId, userId);
+        return find(filmId);
+    }
+
+    @Override
     public List<Film> findCommonFilms(Integer userId, Integer friendId) {
         String usersLikesSql = "select * from films_likes where user_id = ?";
         Collection<Integer> usersFilmsId = jdbcTemplate.query(
