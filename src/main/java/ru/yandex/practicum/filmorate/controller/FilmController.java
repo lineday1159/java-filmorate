@@ -67,4 +67,13 @@ public class FilmController {
     public List<Film> getCommonFilm(@RequestParam Integer userId, @RequestParam Integer friendId) {
         return filmService.findCommonFriends(userId, friendId);
     }
+
+    @DeleteMapping(value = "/films/{filmId}")
+    public void delete(@PathVariable Integer filmId) {
+        log.info("Получен delete запрос к эндпоинту /films/{}", filmId);
+        if (!filmService.delete(filmId)) {
+            log.info("В базе отсутствует фильм по данному ID-{}", filmId);
+            throw new ValidationException("В базе отсутствует фильм по данному ID");
+        }
+    }
 }
