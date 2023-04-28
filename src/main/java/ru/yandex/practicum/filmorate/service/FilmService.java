@@ -68,7 +68,6 @@ public class FilmService {
     }
 
     public boolean delete(Integer id) {
-        filmStorage.find(id);
         return filmStorage.delete(id);
     }
 }

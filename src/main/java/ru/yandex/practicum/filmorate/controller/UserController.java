@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -63,7 +64,11 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/users/{userId}")
-    public boolean delete(@PathVariable Integer userId) {
-        return userService.delete(userId);
+    public void delete(@PathVariable Integer userId) {
+        log.info("Получен delete запрос к эндпоинту /users/{}", userId);
+        if (!userService.delete(userId)) {
+            log.info("В базе отсутствует пользователь по данному ID-{}", userId);
+            throw new ValidationException("В базе отсутствует пользователь по данному ID");
+        }
     }
 }

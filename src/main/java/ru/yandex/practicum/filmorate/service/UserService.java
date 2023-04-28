@@ -82,7 +82,6 @@ public class UserService {
     }
 
     public boolean delete(Integer id) {
-        userStorage.find(id);
         return userStorage.delete(id);
     }
 }
