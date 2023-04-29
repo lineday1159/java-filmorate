@@ -4,15 +4,21 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
+import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -24,15 +30,43 @@ public class ReviewDbStorage implements ReviewStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<Review> findAllFilmReviews(int filmId, int count) {
+    public List<Review> findFilmReviews(int filmId, int count) {
         log.trace("Call of findAllFilmReviews");
         String sql = "SELECT * FROM prepare_reviews"
-                + (filmId == 0 ? "" : "WHERE film_id = " + filmId)
+                + (filmId == 0 ? "" : " WHERE film_id = " + filmId)
                 + " LIMIT ?";
+        log.debug("SQL = " + sql);
         return jdbcTemplate.query(
                 sql,
                 new Object[]{count},
                 new ReviewRowMapper());
+    }
+
+    @Override
+    public Review create(Review review) {
+        log.trace("Call of findAllFilmReviews");
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("content", review.getContent());
+        values.put("is_positive", review.getIsPositive());
+        values.put("user_id", review.getUserId());
+        values.put("film_id", review.getFilmId());
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reviews")
+                .usingGeneratedKeyColumns("id");
+        try {
+            int id = simpleJdbcInsert.executeAndReturnKey(values).intValue();
+            if (id > 0) {
+                review.setReviewId(id);
+            } else {
+                throw new ValidationException("Не удалось добавить обзор.");
+            }
+        } catch (DataAccessException e) {
+            throw new ValidationException("Не удалось добавить обзор. Причина: " + e.getMessage());
+        }
+
+
+        return review;
     }
 
     private class ReviewRowMapper implements RowMapper<Review> {

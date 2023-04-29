@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface ReviewStorage {
 
-    List<Review> findAllFilmReviews(int filmId, int count);
+    List<Review> findFilmReviews(int filmId, int count);
+
+    Review create(Review review);
 }
