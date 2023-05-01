@@ -67,20 +67,78 @@ public class ReviewDbStorage implements ReviewStorage {
             throw new ValidationException("Не удалось добавить обзор. Причина: " + e.getMessage());
         }
 
-
         return review;
     }
 
     @Override
     public Review find(int id) {
         log.trace("Layer: Storage. Call of find");
+        String sql = "SELECT * FROM PREPARE_REVIEWS WHERE ID = ?";
+        Review review = null;
         try {
-            return jdbcTemplate.queryForObject(
-                    "SELECT * FROM prepare_reviews WHERE id = ?",
+             review = jdbcTemplate.queryForObject(
+                    sql,
                     new Object[]{id},
                     new ReviewRowMapper());
         } catch (DataAccessException e) {
             throw new NotFoundException(String.format("Обзора с id-%d не существует.", id));
+        }
+        return review;
+    }
+
+    @Override
+    public Review update(Review review) {
+        log.trace("Layer: Storage. Call of update");
+        String sql = "UPDATE REVIEWS SET "
+                + "CONTENT = ?, IS_POSITIVE = ?"
+                + "WHERE ID = ?";
+        int updated = jdbcTemplate.update(
+                sql,
+                new Object[]{
+                    review.getContent(),
+                    review.getIsPositive(),
+                    review.getReviewId()
+        });
+        if (updated == 0) {
+            throw new NotFoundException(String.format("Обзора с id-%d не существует.", review.getReviewId()));
+        }
+        return find(review.getReviewId());
+    }
+
+    @Override
+    public void delete(int id) {
+        log.trace("Layer: Storage. Call of delete");
+        String sql = "DELETE FROM REVIEWS WHERE ID = ?";
+        int updated = jdbcTemplate.update(
+                sql,
+                new Object[]{id});
+        if (updated == 0) {
+            throw new NotFoundException(String.format("Обзора с id-%d не существует.", id));
+        }
+    }
+
+    @Override
+    public void setLikeToReview(int userId, int reviewId, int coefficient) {
+        log.trace("Layer: Storage. Call of setLikeToReview with coefficient = " + coefficient);
+        String sql = "MERGE INTO review_likes (USER_ID, REVIEW_ID, WAS_USEFULL) " +
+                "KEY(USER_ID, REVIEW_ID) VALUES (?, ?, ?)";
+        int was_usefull = coefficient / Math.abs(coefficient); // приведём к 1 на всякий
+        try {
+            jdbcTemplate.update(sql, userId, reviewId, was_usefull);
+        } catch (DataAccessException e) {
+            throw new NotFoundException("Пользователь или обзор не найдены.");
+        }
+    }
+
+    @Override
+    public void unsetLikeToReview(int userId, int reviewId) {
+        log.trace("Layer: Storage. Call of unsetLikeToReview");
+        String sql = "DELETE FROM review_likes WHERE user_id = ? AND review_id = ?";
+        try {
+            jdbcTemplate.update(sql, userId, reviewId);
+        } catch (DataAccessException e) {
+            throw new NotFoundException(
+                    String.format("Пользователь %d не ставил оценку обзору %d", userId, reviewId));
         }
     }
 

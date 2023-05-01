@@ -11,4 +11,12 @@ public interface ReviewStorage {
     Review create(Review review);
 
     Review find(int id);
+
+    Review update(Review review);
+
+    void delete(int id);
+
+    void setLikeToReview(int userId, int reviewId, int coefficient);
+
+    void unsetLikeToReview(int userId, int reviewId);
 }

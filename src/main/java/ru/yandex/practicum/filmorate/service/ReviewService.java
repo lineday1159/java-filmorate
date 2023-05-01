@@ -23,8 +23,8 @@ public class ReviewService {
     }
 
     public Review create(Review review) {
-        if (review.getUserId() == null) throw new NotFoundException("Укажите id пользователя");
-        if (review.getFilmId() == null) throw new NotFoundException("Укажите id фильма");
+        if (review.getUserId() == null) throw new ValidationException("Укажите id пользователя");
+        if (review.getFilmId() == null) throw new ValidationException("Укажите id фильма");
         if (review.getContent() == null || review.getContent().isBlank())
             throw new ValidationException("Напишите обЗор");
         if (review.getIsPositive() == null)
@@ -38,6 +38,24 @@ public class ReviewService {
         return reviewStorage.find(id);
     }
 
+    public Review update(Review review) {
+        return reviewStorage.update(review);
+    }
 
+    public void delete(int id) {
+        reviewStorage.delete(id);
+    }
+
+    public void likeReview(int userId, int reviewId) {
+        reviewStorage.setLikeToReview(userId, reviewId, 1);
+    }
+
+    public void dislikeReview(int userId, int reviewId) {
+        reviewStorage.setLikeToReview(userId, reviewId, -1);
+    }
+
+    public void unlikeReview(int userId, int reviewId) {
+        reviewStorage.unsetLikeToReview(userId, reviewId);
+    }
 
 }

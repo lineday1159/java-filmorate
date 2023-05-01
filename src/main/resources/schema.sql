@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 
 CREATE TABLE IF NOT EXISTS review_likes (
 	user_id INTEGER REFERENCES users (id),
-	review_id INTEGER REFERENCES reviews (id),
+	review_id INTEGER REFERENCES reviews (id) ON DELETE CASCADE,
 	was_usefull INTEGER NOT NULL,
 	CONSTRAINT uq_user_review_like UNIQUE (user_id, review_id)
 );
