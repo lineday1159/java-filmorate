@@ -12,8 +12,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
+import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
+import javax.validation.Valid;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -31,7 +33,7 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public List<Review> findFilmReviews(int filmId, int count) {
-        log.trace("Call of findAllFilmReviews");
+        log.trace("Layer: Storage. Call of findAllFilmReviews");
         String sql = "SELECT * FROM prepare_reviews"
                 + (filmId == 0 ? "" : " WHERE film_id = " + filmId)
                 + " LIMIT ?";
@@ -43,8 +45,8 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public Review create(Review review) {
-        log.trace("Call of findAllFilmReviews");
+    public Review create(@Valid Review review) {
+        log.trace("Layer: Storage. Call of create review");
 
         Map<String, Object> values = new HashMap<>();
         values.put("content", review.getContent());
@@ -67,6 +69,19 @@ public class ReviewDbStorage implements ReviewStorage {
 
 
         return review;
+    }
+
+    @Override
+    public Review find(int id) {
+        log.trace("Layer: Storage. Call of find");
+        try {
+            return jdbcTemplate.queryForObject(
+                    "SELECT * FROM prepare_reviews WHERE id = ?",
+                    new Object[]{id},
+                    new ReviewRowMapper());
+        } catch (DataAccessException e) {
+            throw new NotFoundException(String.format("Обзора с id-%d не существует.", id));
+        }
     }
 
     private class ReviewRowMapper implements RowMapper<Review> {

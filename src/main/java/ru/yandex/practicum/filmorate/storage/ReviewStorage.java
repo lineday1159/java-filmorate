@@ -9,4 +9,6 @@ public interface ReviewStorage {
     List<Review> findFilmReviews(int filmId, int count);
 
     Review create(Review review);
+
+    Review find(int id);
 }
