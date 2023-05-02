@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS review_likes (
 );
 
 CREATE VIEW IF NOT EXISTS prepare_reviews AS
-SELECT r.*, SUM(rl.was_usefull) AS useful
+SELECT r.*, SUM(coalesce(rl.was_usefull, 0)) AS useful
 FROM REVIEWS r
 LEFT JOIN REVIEW_LIKES rl
 ON rl.review_id = r.id
