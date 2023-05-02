@@ -2,9 +2,9 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -12,14 +12,16 @@ public class Review {
 
     private Integer reviewId;
 
-    @NotNull
     @NotBlank
     private String content;
 
+    @NonNull
     private Boolean isPositive;
 
+    @NonNull
     private Integer userId;
 
+    @NonNull
     private Integer filmId;
 
     private Integer useful = 0;

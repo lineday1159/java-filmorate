@@ -89,7 +89,7 @@ public class ReviewServiceTests {
     @Test
     @Order(6)
     void createNullIsPositiveTest() {
-        assertThrows(ValidationException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             testReviewService.create(
                     new Review(
                             null,
@@ -105,7 +105,7 @@ public class ReviewServiceTests {
     @Test
     @Order(7)
     void createNullUserTest() {
-        assertThrows(ValidationException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             testReviewService.create(
                     new Review(
                             null,
@@ -137,7 +137,7 @@ public class ReviewServiceTests {
     @Test
     @Order(8)
     void createNullFilmTest() {
-        assertThrows(ValidationException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             testReviewService.create(
                     new Review(
                             null,

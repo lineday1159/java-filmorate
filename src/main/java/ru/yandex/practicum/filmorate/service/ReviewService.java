@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Service
@@ -21,13 +22,9 @@ public class ReviewService {
         return reviewStorage.findFilmReviews(filmId, count);
     }
 
-    public Review create(Review review) {
-        if (review.getUserId() == null) throw new ValidationException("Укажите id пользователя");
-        if (review.getFilmId() == null) throw new ValidationException("Укажите id фильма");
+    public Review create(@Valid Review review) {
         if (review.getContent() == null || review.getContent().isBlank())
             throw new ValidationException("Напишите обЗор");
-        if (review.getIsPositive() == null)
-            throw new ValidationException("Указатеи положительный или отрицательный");
         review = reviewStorage.create(review);
         review.setUseful(0);
         return review;
