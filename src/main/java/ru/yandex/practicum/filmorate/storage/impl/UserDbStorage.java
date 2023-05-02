@@ -194,6 +194,7 @@ public class UserDbStorage implements UserStorage {
                     likes.get(userId).add(filmId);
                     return null;
                 });
+
         // Возвращаем Map с оценками пользователей
         return likes;
     }
