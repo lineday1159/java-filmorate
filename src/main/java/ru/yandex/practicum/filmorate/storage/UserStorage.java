@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserStorage {
     User create(User user);
@@ -16,5 +17,5 @@ public interface UserStorage {
 
     boolean delete(Integer id);
 
-    List<Film> recommendations(Integer id);
+    Set<Film> recommendations(Integer id);
 }

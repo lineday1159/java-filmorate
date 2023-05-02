@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @Slf4j
@@ -74,7 +75,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}/recommendations")
-    public List<Film> recommendations(@PathVariable Integer id) {
+    public Set<Film> recommendations(@PathVariable Integer id) {
         return userService.recommendations(id);
     }
 }

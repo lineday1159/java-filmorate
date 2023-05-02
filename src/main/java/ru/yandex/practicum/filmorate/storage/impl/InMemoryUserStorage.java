@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Component
 @Slf4j
@@ -51,7 +52,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<Film> recommendations(Integer id) {
+    public Set<Film> recommendations(Integer id) {
         return null;
     }
 

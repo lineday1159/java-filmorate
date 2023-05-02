@@ -86,7 +86,7 @@ public class UserService {
         return userStorage.delete(id);
     }
 
-    public List<Film> recommendations(Integer id) {
+    public Set<Film> recommendations(Integer id) {
         return userStorage.recommendations(id);
     }
 }

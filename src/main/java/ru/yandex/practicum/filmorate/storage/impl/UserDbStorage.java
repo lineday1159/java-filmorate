@@ -27,10 +27,11 @@ public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private FilmStorage filmStorage;
+    private final FilmStorage filmStorage;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    public UserDbStorage(JdbcTemplate jdbcTemplate, FilmStorage filmStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.filmStorage = filmStorage;
     }
 
     @Override
@@ -117,8 +118,8 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List<Film> recommendations(Integer id) {
-        List<Film> result = new ArrayList<>();
+    public Set<Film> recommendations(Integer id) {
+        Set<Film> result = new HashSet<>();
         Map<Integer, Set<Integer>> likes = getLikes();
         /*Если для данного пользователя нет оценок, или количество пользователей,
         которые поставили оценки меньше или равно 1, то возвращаем пустой список фильмов*/
