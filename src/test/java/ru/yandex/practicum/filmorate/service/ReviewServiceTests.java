@@ -319,13 +319,17 @@ public class ReviewServiceTests {
     @Test
     @Order(16)
     void addLikeToReview2FromUSer1Test() {
-        assertDoesNotThrow(() -> {testReviewService.likeReview(1,2);});
+        assertDoesNotThrow(() -> {
+            testReviewService.likeReview(1,2);
+        });
     }
 
     @Test
     @Order(17)
     void addDislikeToReview2FromUSer1Test() {
-        assertDoesNotThrow(() -> {testReviewService.dislikeReview(2,1);});
+        assertDoesNotThrow(() -> {
+            testReviewService.dislikeReview(2,1);
+        });
     }
 
     @Test
@@ -372,7 +376,9 @@ public class ReviewServiceTests {
     @Test
     @Order(20)
     void deleteReviewTest() {
-        assertDoesNotThrow(() -> {testReviewService.delete(1);});
+        assertDoesNotThrow(() -> {
+            testReviewService.delete(1);
+        });
     }
 
     @Test
