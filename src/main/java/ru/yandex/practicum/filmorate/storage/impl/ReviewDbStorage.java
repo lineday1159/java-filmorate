@@ -135,9 +135,9 @@ public class ReviewDbStorage implements ReviewStorage {
         log.trace("Layer: Storage. Call of setLikeToReview with coefficient = " + coefficient);
         String sql = "MERGE INTO review_likes (USER_ID, REVIEW_ID, WAS_USEFULL) " +
                 "KEY(USER_ID, REVIEW_ID) VALUES (?, ?, ?)";
-        int was_usefull = coefficient / Math.abs(coefficient); // приведём к 1 на всякий
+        int wasUsefull = coefficient / Math.abs(coefficient); // приведём к 1 на всякий
         try {
-            jdbcTemplate.update(sql, userId, reviewId, was_usefull);
+            jdbcTemplate.update(sql, userId, reviewId, wasUsefull);
         } catch (DataAccessException e) {
             throw new NotFoundException("Пользователь или обзор не найдены.");
         }
