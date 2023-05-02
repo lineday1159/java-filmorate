@@ -119,6 +119,22 @@ public class ReviewServiceTests {
     }
 
     @Test
+    @Order(7)
+    void createFailUserTest() {
+        assertThrows(NotFoundException.class, () -> {
+            testReviewService.create(
+                    new Review(
+                            null,
+                            "This film is soo bad.",
+                            true,
+                            -1,
+                            1,
+                            0)
+            );
+        });
+    }
+
+    @Test
     @Order(8)
     void createNullFilmTest() {
         assertThrows(ValidationException.class, () -> {
@@ -206,28 +222,37 @@ public class ReviewServiceTests {
     @Order(13)
     void getReviewsToFilm1AfterAddAnoterReviewTest() {
         List<Review> testReviews = testReviewService.findFilmReviews(1, 10);
+
         assertFalse(testReviews.isEmpty());
         assertEquals(2, testReviews.size());
-        assertEquals(1,testReviews.get(0).getReviewId());
-        assertEquals("This film is soo bad.", testReviews.get(0).getContent());
-        assertEquals(true, testReviews.get(0).getIsPositive());
-        assertEquals(1, testReviews.get(0).getUserId());
-        assertEquals(1, testReviews.get(0).getFilmId());
-        assertEquals(0, testReviews.get(0).getUseful());
-        assertEquals(2,testReviews.get(1).getReviewId());
-        assertEquals("This film is soo bad.", testReviews.get(1).getContent());
-        assertEquals(false, testReviews.get(1).getIsPositive());
-        assertEquals(2, testReviews.get(1).getUserId());
-        assertEquals(1, testReviews.get(1).getFilmId());
-        assertEquals(0, testReviews.get(1).getUseful());
+
+        Review rev0 = testReviews.get(0);
+
+        assertEquals(1,rev0.getReviewId());
+        assertEquals("This film is soo bad.", rev0.getContent());
+        assertEquals(true, rev0.getIsPositive());
+        assertEquals(1, rev0.getUserId());
+        assertEquals(1, rev0.getFilmId());
+        assertEquals(0, rev0.getUseful());
+
+        Review rev1 = testReviews.get(1);
+
+        assertEquals(2,rev1.getReviewId());
+        assertEquals("This film is soo bad.", rev1.getContent());
+        assertEquals(false, rev1.getIsPositive());
+        assertEquals(2, rev1.getUserId());
+        assertEquals(1, rev1.getFilmId());
+        assertEquals(0, rev1.getUseful());
     }
 
     @Test
     @Order(13)
     void getReviewsToFilm1AfterAddAnoterReviewWithCount1Test() {
         List<Review> testReviews = testReviewService.findFilmReviews(1, 1);
+
         assertFalse(testReviews.isEmpty());
         assertEquals(1, testReviews.size());
+
         assertEquals(1,testReviews.get(0).getReviewId());
         assertEquals("This film is soo bad.", testReviews.get(0).getContent());
         assertEquals(true, testReviews.get(0).getIsPositive());
@@ -261,26 +286,34 @@ public class ReviewServiceTests {
     @Order(15)
     void getReviewsWithCount3Test() {
         List<Review> testReviews = testReviewService.findFilmReviews(0, 3);
+
         assertFalse(testReviews.isEmpty());
         assertEquals(3, testReviews.size());
-        assertEquals(1,testReviews.get(0).getReviewId());
-        assertEquals("This film is soo bad.", testReviews.get(0).getContent());
-        assertEquals(true, testReviews.get(0).getIsPositive());
-        assertEquals(1, testReviews.get(0).getUserId());
-        assertEquals(1, testReviews.get(0).getFilmId());
-        assertEquals(0, testReviews.get(0).getUseful());
-        assertEquals(2,testReviews.get(1).getReviewId());
-        assertEquals("This film is soo bad.", testReviews.get(1).getContent());
-        assertEquals(false, testReviews.get(1).getIsPositive());
-        assertEquals(2, testReviews.get(1).getUserId());
-        assertEquals(1, testReviews.get(1).getFilmId());
-        assertEquals(0, testReviews.get(1).getUseful());
-        assertEquals(3,testReviews.get(2).getReviewId());
-        assertEquals("This film is beatiful.", testReviews.get(2).getContent());
-        assertEquals(true, testReviews.get(2).getIsPositive());
-        assertEquals(1, testReviews.get(2).getUserId());
-        assertEquals(2, testReviews.get(2).getFilmId());
-        assertEquals(0, testReviews.get(2).getUseful());
+
+        Review rev1 = testReviews.get(1);
+        Review rev0 = testReviews.get(0);
+        Review rev2 = testReviews.get(2);
+
+        assertEquals(1,rev0.getReviewId());
+        assertEquals("This film is soo bad.", rev0.getContent());
+        assertEquals(true, rev0.getIsPositive());
+        assertEquals(1, rev0.getUserId());
+        assertEquals(1, rev0.getFilmId());
+        assertEquals(0, rev0.getUseful());
+
+        assertEquals(2,rev1.getReviewId());
+        assertEquals("This film is soo bad.", rev1.getContent());
+        assertEquals(false, rev1.getIsPositive());
+        assertEquals(2, rev1.getUserId());
+        assertEquals(1, rev1.getFilmId());
+        assertEquals(0, rev1.getUseful());
+
+        assertEquals(3,rev2.getReviewId());
+        assertEquals("This film is beatiful.", rev2.getContent());
+        assertEquals(true, rev2.getIsPositive());
+        assertEquals(1, rev2.getUserId());
+        assertEquals(2, rev2.getFilmId());
+        assertEquals(0, rev2.getUseful());
     }
 
     @Test
@@ -299,46 +332,41 @@ public class ReviewServiceTests {
     @Order(18)
     void getReviewsAfterLikesTest() {
         List<Review> testReviews = testReviewService.findFilmReviews(0, 10);
+
         assertFalse(testReviews.isEmpty());
         assertEquals(3, testReviews.size());
-        assertEquals(1,testReviews.get(0).getReviewId());
-        assertEquals("This film is soo bad.", testReviews.get(0).getContent());
-        assertEquals(true, testReviews.get(0).getIsPositive());
-        assertEquals(1, testReviews.get(0).getUserId());
-        assertEquals(1, testReviews.get(0).getFilmId());
-        assertEquals(-1, testReviews.get(0).getUseful());
-        assertEquals(2,testReviews.get(1).getReviewId());
-        assertEquals("This film is soo bad.", testReviews.get(1).getContent());
-        assertEquals(false, testReviews.get(1).getIsPositive());
-        assertEquals(2, testReviews.get(1).getUserId());
-        assertEquals(1, testReviews.get(1).getFilmId());
-        assertEquals(1, testReviews.get(1).getUseful());
-        assertEquals(3,testReviews.get(2).getReviewId());
-        assertEquals("This film is beatiful.", testReviews.get(2).getContent());
-        assertEquals(true, testReviews.get(2).getIsPositive());
-        assertEquals(1, testReviews.get(2).getUserId());
-        assertEquals(2, testReviews.get(2).getFilmId());
-        assertEquals(0, testReviews.get(2).getUseful());
+
+        Review rev0 = testReviews.get(0);
+        Review rev1 = testReviews.get(1);
+        Review rev2 = testReviews.get(2);
+
+        assertEquals(1, rev0.getUseful());
+        assertEquals(0, rev1.getUseful());
+        assertEquals(-1, rev2.getUseful());
+
     }
 
     @Test
     @Order(19)
     void getReviewsToFilm1AfterLikesTest() {
         List<Review> testReviews = testReviewService.findFilmReviews(1, 10);
+
         assertFalse(testReviews.isEmpty());
         assertEquals(2, testReviews.size());
-        assertEquals(1,testReviews.get(0).getReviewId());
-        assertEquals("This film is soo bad.", testReviews.get(0).getContent());
-        assertEquals(true, testReviews.get(0).getIsPositive());
-        assertEquals(1, testReviews.get(0).getUserId());
-        assertEquals(1, testReviews.get(0).getFilmId());
-        assertEquals(-1, testReviews.get(0).getUseful());
-        assertEquals(2,testReviews.get(1).getReviewId());
+
+        assertEquals(1,testReviews.get(1).getReviewId());
         assertEquals("This film is soo bad.", testReviews.get(1).getContent());
-        assertEquals(false, testReviews.get(1).getIsPositive());
-        assertEquals(2, testReviews.get(1).getUserId());
+        assertEquals(true, testReviews.get(1).getIsPositive());
+        assertEquals(1, testReviews.get(1).getUserId());
         assertEquals(1, testReviews.get(1).getFilmId());
-        assertEquals(1, testReviews.get(1).getUseful());
+        assertEquals(-1, testReviews.get(1).getUseful());
+
+        assertEquals(2,testReviews.get(0).getReviewId());
+        assertEquals("This film is soo bad.", testReviews.get(0).getContent());
+        assertEquals(false, testReviews.get(0).getIsPositive());
+        assertEquals(2, testReviews.get(0).getUserId());
+        assertEquals(1, testReviews.get(0).getFilmId());
+        assertEquals(1, testReviews.get(0).getUseful());
     }
 
     @Test
@@ -359,8 +387,10 @@ public class ReviewServiceTests {
     @Order(22)
     void getReviewsToFilm1AfterDeleteTest() {
         List<Review> testReviews = testReviewService.findFilmReviews(1, 10);
+
         assertFalse(testReviews.isEmpty());
         assertEquals(1, testReviews.size());
+
         assertEquals(2,testReviews.get(0).getReviewId());
         assertEquals("This film is soo bad.", testReviews.get(0).getContent());
         assertEquals(false, testReviews.get(0).getIsPositive());

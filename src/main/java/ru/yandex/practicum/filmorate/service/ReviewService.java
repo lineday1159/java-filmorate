@@ -39,6 +39,14 @@ public class ReviewService {
     }
 
     public Review update(Review review) {
+        if (review.getReviewId() == null)
+            throw new NotFoundException(
+                    String.format("Обзора с id-%d не существует.", review.getReviewId())
+            );
+        if (review.getContent() == null || review.getContent().isBlank())
+            throw new ValidationException("Напишите обЗор");
+        if (review.getIsPositive() == null)
+            throw new ValidationException("Указатеи положительный или отрицательный");
         return reviewStorage.update(review);
     }
 

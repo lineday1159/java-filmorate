@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,7 +12,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
@@ -31,12 +34,18 @@ public class ReviewDbStorage implements ReviewStorage {
     @Autowired
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private final UserStorage userStorage;
+
+    @Autowired
+    private final FilmStorage filmStorage;
+
     @Override
     public List<Review> findFilmReviews(int filmId, int count) {
         log.trace("Layer: Storage. Call of findAllFilmReviews");
         String sql = "SELECT * FROM prepare_reviews"
                 + (filmId == 0 ? "" : " WHERE film_id = " + filmId)
-                + " LIMIT ?";
+                + " ORDER BY useful DESC, id LIMIT ?";
         log.debug("SQL = " + sql);
         return jdbcTemplate.query(
                 sql,
@@ -47,7 +56,13 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Review create(@Valid Review review) {
         log.trace("Layer: Storage. Call of create review");
-
+        /*
+            Как-то так, ошибку от sql пока по-человечески не разобрать.
+            При попытке закинуть с некорректными id он выдаёт ошибку и
+            всё равно увеличивает инкремент, и тесты не проходят.
+        */
+        userStorage.find(review.getUserId());
+        filmStorage.find(review.getFilmId());
         Map<String, Object> values = new HashMap<>();
         values.put("content", review.getContent());
         values.put("is_positive", review.getIsPositive());
@@ -87,7 +102,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public Review update(Review review) {
+    public Review update(@Valid Review review) {
         log.trace("Layer: Storage. Call of update");
         String sql = "UPDATE REVIEWS SET "
                 + "CONTENT = ?, IS_POSITIVE = ?"
