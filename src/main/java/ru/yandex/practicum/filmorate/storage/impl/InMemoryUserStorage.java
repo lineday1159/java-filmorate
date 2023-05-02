@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
@@ -47,6 +48,11 @@ public class InMemoryUserStorage implements UserStorage {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public List<Film> recommendations(Integer id) {
+        return null;
     }
 
     @Override
