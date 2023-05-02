@@ -14,15 +14,15 @@ import java.util.List;
 public class ReviewController {
 
     @Autowired
-    ReviewService reviewService;
+    private final ReviewService reviewService;
 
     @GetMapping("/{reviewId}")
-    Review find(@PathVariable int reviewId) {
+    private final Review find(@PathVariable int reviewId) {
         return reviewService.find(reviewId);
     }
 
     @GetMapping
-    List<Review> findFilmReviews(
+    public List<Review> findFilmReviews(
             @RequestParam(defaultValue = "0") int filmId,
             @RequestParam(defaultValue = "10") int count
     ) {
@@ -30,32 +30,32 @@ public class ReviewController {
     }
 
     @PostMapping
-    Review create(@RequestBody Review review) {
+    public Review create(@RequestBody Review review) {
         return reviewService.create(review);
     }
 
     @PutMapping
-    Review update(@RequestBody Review review) {
+    public Review update(@RequestBody Review review) {
         return reviewService.update(review);
     }
 
     @PutMapping("/{reviewId}/like/{userId}")
-    void likeReview(@PathVariable int reviewId, @PathVariable int userId) {
+    public void likeReview(@PathVariable int reviewId, @PathVariable int userId) {
         reviewService.likeReview(userId, reviewId);
     }
 
     @PutMapping("/{reviewId}/dislike/{userId}")
-    void dislikeReview(@PathVariable int reviewId, @PathVariable int userId) {
+    public void dislikeReview(@PathVariable int reviewId, @PathVariable int userId) {
         reviewService.dislikeReview(userId, reviewId);
     }
 
     @DeleteMapping("/{reviewId}")
-    void delete(@PathVariable int reviewId) {
+    public void delete(@PathVariable int reviewId) {
         reviewService.delete(reviewId);
     }
 
     @DeleteMapping({"/{reviewId}/like/{userId}","/{reviewId}/dislike/{userId}"})
-    void unlikeReview(@PathVariable int reviewId, @PathVariable int userId) {
+    public void unlikeReview(@PathVariable int reviewId, @PathVariable int userId) {
         reviewService.unlikeReview(userId, reviewId);
     }
 }

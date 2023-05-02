@@ -16,7 +16,7 @@ import java.util.List;
 public class ReviewService {
 
     @Autowired
-    ReviewStorage reviewStorage;
+    private final ReviewStorage reviewStorage;
 
     public List<Review> findFilmReviews(int filmId, int count) {
         return reviewStorage.findFilmReviews(filmId, count);
@@ -34,15 +34,11 @@ public class ReviewService {
         return reviewStorage.find(id);
     }
 
-    public Review update(Review review) {
+    public Review update(@Valid Review review) {
         if (review.getReviewId() == null)
             throw new NotFoundException(
                     String.format("Обзора с id-%d не существует.", review.getReviewId())
             );
-        if (review.getContent() == null || review.getContent().isBlank())
-            throw new ValidationException("Напишите обЗор");
-        if (review.getIsPositive() == null)
-            throw new ValidationException("Указатеи положительный или отрицательный");
         return reviewStorage.update(review);
     }
 
