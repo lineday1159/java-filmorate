@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Service
@@ -22,7 +21,7 @@ public class ReviewService {
         return reviewStorage.findFilmReviews(filmId, count);
     }
 
-    public Review create(@Valid Review review) {
+    public Review create(Review review) {
         if (review.getContent() == null || review.getContent().isBlank())
             throw new ValidationException("Напишите обЗор");
         review = reviewStorage.create(review);
@@ -34,7 +33,7 @@ public class ReviewService {
         return reviewStorage.find(id);
     }
 
-    public Review update(@Valid Review review) {
+    public Review update(Review review) {
         if (review.getReviewId() == null)
             throw new NotFoundException(
                     String.format("Обзора с id-%d не существует.", review.getReviewId())
