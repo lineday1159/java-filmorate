@@ -120,49 +120,31 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Set<Film> recommendations(Integer id) {
         Set<Film> result = new HashSet<>();
-        Map<Integer, Set<Integer>> likes = getLikes();
-        /*Если для данного пользователя нет оценок, или количество пользователей,
-        которые поставили оценки меньше или равно 1, то возвращаем пустой список фильмов*/
-        if (!likes.containsKey(id) || likes.size() <= 1) {
-            return result;
-        }
-        // Получаем множество фильмов, которые оценил пользователь с заданным id
-        Set<Integer> targetSet = likes.get(id);
-        // Удаляем пользователя с заданным id из Map
-        likes.remove(id);
-        // Ищем пользователя, чьи оценки имеют максимальное пересечение с оценками пользователя с заданным id
-        int maxIntersectionSize = 0;
-        Integer recommendUserId = null;
-        for (Map.Entry<Integer, Set<Integer>> uid : likes.entrySet()) {
-            // Если множества оценок двух пользователей равны, то пропускаем эту итерацию цикла
-            if (targetSet.equals(uid.getValue())) {
-                continue;
-            }
-            // Находим пересечение множеств оценок двух пользователей
-            Set<Integer> intersection = new HashSet<>(uid.getValue());
-            intersection.retainAll(targetSet);
-            /* Если пересечение множеств больше, чем предыдущее максимальное пересечение, то обновляем
-            максимальное пересечение и id пользователя
-             */
-            if (intersection.size() > maxIntersectionSize) {
-                maxIntersectionSize = intersection.size();
-                recommendUserId = uid.getKey();
-            }
-        }
-        // Если нашли пользователя, чьи оценки имеют наибольшее пересечение с оценками пользователя с заданным id
-        if (recommendUserId != null) {
-            /* Получаем множество фильмов, которые оценил найденный пользователь, но которые пользователь
-            с заданным id не оценил
-             */
-            Set<Integer> set = new HashSet<>(likes.get(recommendUserId));
-            set.removeAll(targetSet);
-            /* Для каждого фильма в множестве находим объект фильма в хранилище фильмов и
-            добавляем его в результирующий список
-             */
-            for (Integer filmId : set) {
-                result.add(filmStorage.find(filmId));
-            }
-        }
+        String sql = "SELECT f.* " +
+                "FROM films f " +
+                "WHERE f.id IN (" +
+                "SELECT film_id " +
+                "FROM films_likes " +
+                "WHERE user_id = (" +
+                "SELECT u.id " +
+                "FROM users u " +
+                "WHERE u.id <> ? " +
+                "ORDER BY (" +
+                "SELECT COUNT(*) " +
+                "FROM films_likes fl1 " +
+                "JOIN films_likes fl2 ON fl1.film_id = fl2.film_id " +
+                "WHERE fl1.user_id = ? AND fl2.user_id = u.id " +
+                ") DESC " +
+                "LIMIT 1" +
+                ") " +
+                "EXCEPT " +
+                "SELECT film_id " +
+                "FROM films_likes " +
+                "WHERE user_id = ?" +
+                ")";
+        List<Film> films = jdbcTemplate.query(sql, new Object[]{id, id, id},
+                (rs, rowNum) -> filmStorage.find(rs.getInt("id")));
+        result.addAll(films);
         return result;
     }
 
@@ -177,26 +159,6 @@ public class UserDbStorage implements UserStorage {
         List<Integer> friendsCollection = jdbcTemplate.query(friendsSql, (rs1, rowNum) -> makeUserFriend(rs1), id);
 
         return new User(id, name, email, login, birthday, new HashSet<Integer>(friendsCollection));
-    }
-
-    private Map<Integer, Set<Integer>> getLikes() {
-        // Создаем пустой Map для хранения оценок пользователей
-        Map<Integer, Set<Integer>> likes = new HashMap<>();
-        // Выполняем запрос к базе данных, чтобы получить id пользователей и фильмов, которые они оценили
-        jdbcTemplate.query("select film_id, user_id from films_likes",
-                (rs, rowNum) -> {
-                    Integer userId = rs.getInt("user_id");
-                    Integer filmId = rs.getInt("film_id");
-                    // Если пользователь еще не добавлен в Map, то добавляем его
-                    if (!likes.containsKey(userId)) {
-                        likes.put(userId, new HashSet<>());
-                    }
-                    // Добавляем оценку пользователя для данного фильма в его множество оценок
-                    likes.get(userId).add(filmId);
-                    return null;
-                });
-        // Возвращаем Map с оценками пользователей
-        return likes;
     }
 
     private Integer makeUserFriend(ResultSet rs) throws SQLException {
