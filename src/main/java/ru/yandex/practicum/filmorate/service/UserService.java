@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -83,5 +84,9 @@ public class UserService {
 
     public boolean delete(Integer id) {
         return userStorage.delete(id);
+    }
+
+    public List<Film> recommendations(Integer id) {
+        return userStorage.recommendations(id);
     }
 }

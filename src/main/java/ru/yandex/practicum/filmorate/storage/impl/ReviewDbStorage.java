@@ -89,7 +89,7 @@ public class ReviewDbStorage implements ReviewStorage {
         String sql = "SELECT * FROM PREPARE_REVIEWS WHERE ID = ?";
         Review review = null;
         try {
-             review = jdbcTemplate.queryForObject(
+            review = jdbcTemplate.queryForObject(
                     sql,
                     new Object[]{id},
                     new ReviewRowMapper());
@@ -108,10 +108,10 @@ public class ReviewDbStorage implements ReviewStorage {
         int updated = jdbcTemplate.update(
                 sql,
                 new Object[]{
-                    review.getContent(),
-                    review.getIsPositive(),
-                    review.getReviewId()
-        });
+                        review.getContent(),
+                        review.getIsPositive(),
+                        review.getReviewId()
+                });
         if (updated == 0) {
             throw new NotFoundException(String.format("Обзора с id-%d не существует.", review.getReviewId()));
         }
