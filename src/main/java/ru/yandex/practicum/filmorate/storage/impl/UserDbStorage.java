@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@Primary
 @Qualifier("userDbStorage")
 public class UserDbStorage implements UserStorage {
 
@@ -107,10 +109,10 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public boolean delete(Integer id) {
-        String sqlQuery = "delete from mpa where id = ?";
-        jdbcTemplate.update(sqlQuery, id);
+        String sqlQuery = "delete from friendships where friend_id = ? or user_id = ?";
+        jdbcTemplate.update(sqlQuery, id, id);
 
-        sqlQuery = "delete from mpa where id = ?";
+        sqlQuery = "delete from users where id = ?";
         return jdbcTemplate.update(sqlQuery, id) > 0;
     }
 
