@@ -118,8 +118,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public Set<Film> recommendations(Integer id) {
-        Set<Film> result = new HashSet<>();
+    public List<Film> recommendations(Integer id) {
         String sql = "SELECT f.* " +
                 "FROM films f " +
                 "WHERE f.id IN (" +
@@ -142,10 +141,8 @@ public class UserDbStorage implements UserStorage {
                 "FROM films_likes " +
                 "WHERE user_id = ?" +
                 ")";
-        List<Film> films = jdbcTemplate.query(sql, new Object[]{id, id, id},
+        return jdbcTemplate.query(sql, new Object[]{id, id, id},
                 (rs, rowNum) -> filmStorage.find(rs.getInt("id")));
-        result.addAll(films);
-        return result;
     }
 
     private User makeUser(ResultSet rs) throws SQLException {

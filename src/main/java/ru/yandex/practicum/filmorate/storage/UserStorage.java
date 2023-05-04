@@ -17,5 +17,5 @@ public interface UserStorage {
 
     boolean delete(Integer id);
 
-    Set<Film> recommendations(Integer id);
+    List<Film> recommendations(Integer id);
 }

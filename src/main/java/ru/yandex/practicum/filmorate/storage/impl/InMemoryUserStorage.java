@@ -52,7 +52,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Set<Film> recommendations(Integer id) {
+    public List<Film> recommendations(Integer id) {
         return null;
     }
 
