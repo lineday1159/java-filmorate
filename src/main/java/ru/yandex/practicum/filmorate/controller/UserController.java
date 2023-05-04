@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @Slf4j
