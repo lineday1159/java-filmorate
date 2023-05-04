@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.DirectorsService;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import javax.validation.Valid;
@@ -15,10 +17,12 @@ import java.util.List;
 @Slf4j
 public class FilmController {
     private final FilmService filmService;
+    private final DirectorsService directorsService;
 
     @Autowired
-    public FilmController(FilmService filmService) {
+    public FilmController(FilmService filmService, DirectorsService directorsService) {
         this.filmService = filmService;
+        this.directorsService = directorsService;
     }
 
     @GetMapping("/films")
@@ -49,8 +53,8 @@ public class FilmController {
     }
 
     @PutMapping(value = "/films/{id}/like/{userId}")
-    public Film addLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        return filmService.addLike(id, userId);
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.addLike(id, userId);
     }
 
     @DeleteMapping(value = "/films/{id}/like/{userId}")
@@ -66,5 +70,13 @@ public class FilmController {
     @GetMapping(value = "/films/common")
     public List<Film> getCommonFilm(@RequestParam Integer userId, @RequestParam Integer friendId) {
         return filmService.findCommonFriends(userId, friendId);
+    }
+
+    @GetMapping("/films/director/{directorId}")
+    public List<Film> findFilmsByDirector(@RequestParam String sortBy, @PathVariable(required = true) int directorId) {
+        if (!directorsService.exists(directorId)) {
+            throw new NotFoundException(String.format("Режиссера с id-%d не существует.", directorId));
+        }
+        return filmService.findFilmsByDirector(sortBy, directorId);
     }
 }

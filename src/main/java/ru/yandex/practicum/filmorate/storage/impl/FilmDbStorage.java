@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -38,6 +40,11 @@ public class FilmDbStorage implements FilmStorage {
         values.put("mpa_id", film.getMpa().getId());
         values.put("release_date", film.getReleaseDate());
         values.put("duration", film.getDuration());
+        if (film.getDirectors() != null) {
+            for (Director director : film.getDirectors()) {
+                values.put("director_id", director.getId());
+            }
+        }
 
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("films")
@@ -62,9 +69,11 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> findAll() {
         String sql = "select f.id id, f.name name,f.description description,\n" +
                 "f.mpa_id mpa_id, m.name as mpa_name,\n" +
-                "f.release_date release_date, f.duration as duration\n" +
+                "f.release_date release_date, f.duration as duration,\n" +
+                "f.director_id, d.name as director_name\n" +
                 "from films f\n" +
-                "JOIN mpa m ON m.id = f.mpa_id";
+                "JOIN mpa m ON m.id = f.mpa_id\n" +
+                "LEFT JOIN directors d ON f.director_id = d.id";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
     }
@@ -112,7 +121,7 @@ public class FilmDbStorage implements FilmStorage {
         find(film.getId());
 
         String sqlQuery = "update films set " +
-                "name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ? " +
+                "name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?, director_id = ? " +
                 "where id = ?";
         jdbcTemplate.update(sqlQuery,
                 film.getName(),
@@ -120,6 +129,7 @@ public class FilmDbStorage implements FilmStorage {
                 film.getReleaseDate(),
                 film.getDuration(),
                 film.getMpa().getId(),
+                film.getDirectors() != null ? film.getDirectors().get(0).getId() : null,
                 film.getId());
         if (film.getGenres() != null) {
             String genreSqlQuery = "delete from films_genres where film_id = ?";
@@ -132,21 +142,6 @@ public class FilmDbStorage implements FilmStorage {
                         genre.getId());
             }
         }
-
-        if (film.getLikes() != null) {
-            String likeSqlQuery = "delete from films_likes where film_id = ?";
-            jdbcTemplate.update(likeSqlQuery, film.getId());
-
-            for (Integer userId : film.getLikes()) {
-                likeSqlQuery = "insert into films_likes(film_id, user_id) " +
-                        "values (?, ?)";
-                jdbcTemplate.update(likeSqlQuery,
-                        film.getId(),
-                        userId);
-            }
-        }
-
-
         return find(film.getId());
     }
 
@@ -154,9 +149,11 @@ public class FilmDbStorage implements FilmStorage {
     public Film find(Integer id) {
         String sql = "select f.id id, f.name name,f.description description,\n" +
                 "f.mpa_id mpa_id, m.name as mpa_name,\n" +
-                "f.release_date release_date, f.duration as duration\n" +
+                "f.release_date release_date, f.duration as duration,\n" +
+                "f.director_id, d.name as director_name\n" +
                 "from films f\n" +
                 "JOIN mpa m ON m.id = f.mpa_id\n" +
+                "LEFT JOIN directors d ON f.director_id = d.id\n" +
                 "where f.id = ?";
 
         List<Film> filmCollection = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), id);
@@ -186,8 +183,13 @@ public class FilmDbStorage implements FilmStorage {
 
         String likesSql = "select * from films_likes where film_id = ?";
         List<Integer> usersCollection = jdbcTemplate.query(likesSql, (rs1, rowNum) -> makeFilmsLike(rs1), id);
-
-        return new Film(id, name, description, releaseDate, duration, new HashSet<>(genreCollection), new Mpa(mpaId, mpaName), new HashSet<>(usersCollection));
+        Film film = new Film(id, name, description, releaseDate, duration,
+                new HashSet<>(genreCollection), new Mpa(mpaId, mpaName),
+                new HashSet<>(usersCollection), new ArrayList<Director>());
+        if (rs.getInt("director_id") > 0) {
+            film.addDirector(new Director(rs.getInt("director_id"), rs.getString("director_name")));
+        }
+        return film;
     }
 
     private Genre makeFilmsGenre(ResultSet rs) throws SQLException {
@@ -199,5 +201,50 @@ public class FilmDbStorage implements FilmStorage {
     private Integer makeFilmsLike(ResultSet rs) throws SQLException {
         Integer userId = rs.getInt("user_id");
         return userId;
+    }
+
+    public void deleteDirectorFromFilms(int id) {
+        jdbcTemplate.update("update films set director_id = null where director_id = ?", id);
+    }
+
+    public List<Film> getFilmsByDirectorByReleaseDate(int id) {
+        String sql = "select f.id id, f.name name,f.description description,\n" +
+                "f.mpa_id mpa_id, m.name as mpa_name,\n" +
+                "f.release_date release_date, f.duration as duration,\n" +
+                "f.director_id, d.name as director_name\n" +
+                "from films f\n" +
+                "JOIN mpa m ON m.id = f.mpa_id\n" +
+                "LEFT JOIN directors d ON f.director_id = d.id\n" +
+                "where f.director_id = ?\n" +
+                "order by extract(year from release_date), id";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), id);
+    }
+
+    public List<Film> getFilmsByDirectorByLikes(int id) {
+        String sql = "select f.id id, f.name name,f.description description,\n" +
+                "f.mpa_id mpa_id, m.name as mpa_name,\n" +
+                "f.release_date release_date, f.duration as duration,\n" +
+                "f.director_id, d.name as director_name, count(fl.user_id) as likes\n" +
+                "from films f\n" +
+                "JOIN mpa m ON m.id = f.mpa_id\n" +
+                "LEFT JOIN directors d ON f.director_id = d.id\n" +
+                "LEFT JOIN films_likes fl on f.id = fl.film_id\n" +
+                "where f.director_id = ?\n" +
+                "group by id\n" +
+                "order by likes";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), id);
+    }
+
+    public void addLike(int filmId, int userId) {
+        jdbcTemplate.update("insert into films_likes(film_id, user_id) values (?, ?)", filmId, userId);
+    }
+
+    public boolean exits(int id) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select exists(select id from films where id = ?) as exist", id);
+        if (userRows.next()) {
+            return userRows.getBoolean("exist");
+        } else {
+            return false;
+        }
     }
 }

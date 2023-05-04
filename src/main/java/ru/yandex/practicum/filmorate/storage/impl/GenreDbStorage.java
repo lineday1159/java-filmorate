@@ -55,5 +55,4 @@ public class GenreDbStorage implements GenreStorage {
         String genreName = rs.getString("name");
         return new Genre(genreId, genreName);
     }
-
 }

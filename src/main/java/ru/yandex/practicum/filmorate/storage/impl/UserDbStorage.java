@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -129,5 +130,14 @@ public class UserDbStorage implements UserStorage {
     private Integer makeUserFriend(ResultSet rs) throws SQLException {
         Integer friendId = rs.getInt("friend_id");
         return friendId;
+    }
+
+    public boolean exists(int id) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select exists(select id from users where id = ?) as exist", id);
+        if (userRows.next()) {
+            return userRows.getBoolean("exist");
+        } else {
+            return false;
+        }
     }
 }

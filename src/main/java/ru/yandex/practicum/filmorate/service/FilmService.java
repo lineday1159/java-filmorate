@@ -4,33 +4,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
 
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final FilmDbStorage filmStorage;
+    private final UserDbStorage userStorage;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmDbStorage filmStorage, @Qualifier("userDbStorage") UserDbStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
 
-    public Film addLike(Integer filmId, Integer userId) {
-        Film film = filmStorage.find(filmId);
-        User user = userStorage.find(userId);
-        Set<Integer> filmLikesId = film.getLikes();
-        filmLikesId.add(userId);
-        film.setLikes(filmLikesId);
-        return filmStorage.update(film);
+    public void addLike(Integer filmId, Integer userId) {
+        if (userStorage.exists(userId) && filmStorage.exits(filmId)) {
+            filmStorage.addLike(filmId, userId);
+        }
     }
 
     public Film deleteLike(Integer filmId, Integer userId) {
@@ -67,5 +62,17 @@ public class FilmService {
         return filmStorage.findCommonFilms(userId, friendId).stream()
                 .sorted(this::compare)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteDirectorFromFilms(int id) {
+        filmStorage.deleteDirectorFromFilms(id);
+    }
+
+    public List<Film> findFilmsByDirector(String sort, int id) {
+        if ("year".equals(sort)) {
+            return filmStorage.getFilmsByDirectorByReleaseDate(id);
+        } else {
+            return filmStorage.getFilmsByDirectorByLikes(id);
+        }
     }
 }
