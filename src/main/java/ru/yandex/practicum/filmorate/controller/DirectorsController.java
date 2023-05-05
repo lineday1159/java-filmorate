@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorsService;
-import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -42,9 +41,6 @@ public class DirectorsController {
     @PutMapping(value = "/directors")
     Director update(@Valid @RequestBody Director director, HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
-        if (!service.exists(director.getId())) {
-            throw new NotFoundException(String.format("Режиссера с id-%d не существует.", director.getId()));
-        }
         service.update(director);
         return director;
     }

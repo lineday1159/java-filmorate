@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.DirectorsService;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import javax.validation.Valid;
@@ -74,13 +73,11 @@ public class FilmController {
 
     @GetMapping("/films/director/{directorId}")
     public List<Film> findFilmsByDirector(@RequestParam String sortBy, @PathVariable(required = true) int directorId) {
-        if (!directorsService.exists(directorId)) {
-            throw new NotFoundException(String.format("Режиссера с id-%d не существует.", directorId));
-        }
         return filmService.findFilmsByDirector(sortBy, directorId);
+    }
 
     @DeleteMapping(value = "/films/{filmId}")
-    public void delete(@PathVariable Integer filmId) {
+    public void delete(@PathVariable int filmId) {
         log.info("Получен delete запрос к эндпоинту /films/{}", filmId);
         if (!filmService.delete(filmId)) {
             log.info("В базе отсутствует фильм по данному ID-{}", filmId);
