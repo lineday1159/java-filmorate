@@ -76,3 +76,13 @@ public class FilmController {
         return filmService.findFilmsByDirector(sortBy, directorId);
     }
 }
+
+    @DeleteMapping(value = "/films/{filmId}")
+    public void delete(@PathVariable Integer filmId) {
+        log.info("Получен delete запрос к эндпоинту /films/{}", filmId);
+        if (!filmService.delete(filmId)) {
+            log.info("В базе отсутствует фильм по данному ID-{}", filmId);
+            throw new ValidationException("В базе отсутствует фильм по данному ID");
+        }
+    }
+}

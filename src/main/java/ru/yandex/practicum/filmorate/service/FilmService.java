@@ -64,9 +64,11 @@ public class FilmService {
     }
 
     public List<Film> findCommonFriends(Integer userId, Integer friendId) {
-        return filmStorage.findCommonFilms(userId, friendId).stream()
-                .sorted(this::compare)
-                .collect(Collectors.toList());
+        return filmStorage.findCommonFilms(userId, friendId).stream().sorted(this::compare).collect(Collectors.toList());
+    }
+
+    public boolean delete(Integer id) {
+        return filmStorage.delete(id);
     }
 
     public void deleteDirectorFromFilms(int id) {

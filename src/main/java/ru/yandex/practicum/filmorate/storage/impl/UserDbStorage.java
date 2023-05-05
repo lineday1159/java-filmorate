@@ -3,11 +3,14 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
@@ -20,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
+@Primary
 @Qualifier("userDbStorage")
 public class UserDbStorage implements UserStorage {
 
@@ -27,8 +31,11 @@ public class UserDbStorage implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    private final FilmStorage filmStorage;
+
+    public UserDbStorage(JdbcTemplate jdbcTemplate, FilmStorage filmStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.filmStorage = filmStorage;
     }
 
     @Override
@@ -107,11 +114,39 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public boolean delete(Integer id) {
-        String sqlQuery = "delete from mpa where id = ?";
-        jdbcTemplate.update(sqlQuery, id);
+        String sqlQuery = "delete from friendships where friend_id = ? or user_id = ?";
+        jdbcTemplate.update(sqlQuery, id, id);
 
-        sqlQuery = "delete from mpa where id = ?";
+        sqlQuery = "delete from users where id = ?";
         return jdbcTemplate.update(sqlQuery, id) > 0;
+    }
+
+    @Override
+    public List<Film> recommendations(Integer id) {
+        String sql = "SELECT f.* " +
+                "FROM films f " +
+                "WHERE f.id IN (" +
+                "SELECT film_id " +
+                "FROM films_likes " +
+                "WHERE user_id = (" +
+                "SELECT u.id " +
+                "FROM users u " +
+                "WHERE u.id <> ? " +
+                "ORDER BY (" +
+                "SELECT COUNT(*) " +
+                "FROM films_likes fl1 " +
+                "JOIN films_likes fl2 ON fl1.film_id = fl2.film_id " +
+                "WHERE fl1.user_id = ? AND fl2.user_id = u.id " +
+                ") DESC " +
+                "LIMIT 1" +
+                ") " +
+                "EXCEPT " +
+                "SELECT film_id " +
+                "FROM films_likes " +
+                "WHERE user_id = ?" +
+                ")";
+        return jdbcTemplate.query(sql, new Object[]{id, id, id},
+                (rs, rowNum) -> filmStorage.find(rs.getInt("id")));
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
