@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.impl.DirectorsDbStorage;
 import ru.yandex.practicum.filmorate.storage.impl.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.impl.UserDbStorage;
+import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,11 +17,14 @@ public class FilmService {
 
     private final FilmDbStorage filmStorage;
     private final UserDbStorage userStorage;
+    private final DirectorsDbStorage directorsDbStorage;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmDbStorage filmStorage, @Qualifier("userDbStorage") UserDbStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmDbStorage filmStorage, @Qualifier("userDbStorage") UserDbStorage userStorage,
+                       @Qualifier("directorsDbStorage") DirectorsDbStorage directorsDbStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.directorsDbStorage = directorsDbStorage;
     }
 
     public void addLike(Integer filmId, Integer userId) {
@@ -69,6 +74,9 @@ public class FilmService {
     }
 
     public List<Film> findFilmsByDirector(String sort, int id) {
+        if (!directorsDbStorage.directorExists(id)) {
+            throw new NotFoundException(String.format("Режиссера с id-%d не существует.", id));
+        }
         if ("year".equals(sort)) {
             return filmStorage.getFilmsByDirectorByReleaseDate(id);
         } else {

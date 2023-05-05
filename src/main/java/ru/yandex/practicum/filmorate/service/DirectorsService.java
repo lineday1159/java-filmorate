@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.impl.DirectorsDbStorage;
+import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
 import java.util.List;
 
@@ -31,6 +32,9 @@ public class DirectorsService {
     }
 
     public void update(Director director) {
+        if (!storage.directorExists(director.getId())) {
+            throw new NotFoundException(String.format("Режиссера с id-%d не существует.", director.getId()));
+        }
         storage.update(director);
     }
 
