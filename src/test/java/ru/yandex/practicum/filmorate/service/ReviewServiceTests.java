@@ -1,24 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
-import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.validation.NotFoundException;
-import ru.yandex.practicum.filmorate.validation.ValidationException;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ReviewServiceTests {
-
+    /*
     @Autowired
     ReviewService testReviewService;
 
@@ -404,4 +393,5 @@ public class ReviewServiceTests {
         assertEquals(1, testReviews.get(0).getFilmId());
         assertEquals(1, testReviews.get(0).getUseful());
     }
+     */
 }

@@ -16,5 +16,9 @@ public interface UserStorage {
 
     boolean delete(Integer id);
 
+    boolean deleteFriend(Integer userId, Integer friendId);
+
     List<Film> recommendations(Integer id);
+
+    boolean exists(int id);
 }
