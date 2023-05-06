@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -35,6 +36,13 @@ public class UserDbStorage implements UserStorage {
     public UserDbStorage(JdbcTemplate jdbcTemplate, FilmStorage filmStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.filmStorage = filmStorage;
+    }
+
+    @Override
+    public boolean exists(int id) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select id from users " +
+                "where id = ?", id);
+        return userRows.next();
     }
 
     @Override
@@ -113,11 +121,14 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public boolean delete(Integer id) {
-        String sqlQuery = "delete from friendships where friend_id = ? or user_id = ?";
-        jdbcTemplate.update(sqlQuery, id, id);
-
-        sqlQuery = "delete from users where id = ?";
+        String sqlQuery = "delete from users where id = ?";
         return jdbcTemplate.update(sqlQuery, id) > 0;
+    }
+
+    @Override
+    public boolean deleteFriend(Integer userId, Integer friendId) {
+        String sqlQuery = "delete from friendships where user_id = ? and friend_id = ?";
+        return jdbcTemplate.update(sqlQuery, userId, friendId) > 0;
     }
 
     @Override

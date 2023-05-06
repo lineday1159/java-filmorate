@@ -49,8 +49,8 @@ public class FilmController {
     }
 
     @PutMapping(value = "/films/{id}/like/{userId}")
-    public Film addLike(@PathVariable Integer id, @PathVariable Integer userId) {
-        return filmService.addLike(id, userId);
+    public void addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        filmService.addLike(id, userId);
     }
 
     @DeleteMapping(value = "/films/{id}/like/{userId}")
@@ -66,6 +66,11 @@ public class FilmController {
     @GetMapping(value = "/films/common")
     public List<Film> getCommonFilm(@RequestParam Integer userId, @RequestParam Integer friendId) {
         return filmService.findCommonFriends(userId, friendId);
+    }
+
+    @GetMapping("/films/director/{directorId}")
+    public List<Film> findFilmsByDirector(@RequestParam String sortBy, @PathVariable(required = true) int directorId) {
+        return filmService.findFilmsByDirector(sortBy, directorId);
     }
 
     @DeleteMapping(value = "/films/{filmId}")

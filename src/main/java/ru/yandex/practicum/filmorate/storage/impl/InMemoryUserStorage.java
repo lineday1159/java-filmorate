@@ -51,6 +51,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
+    public boolean deleteFriend(Integer userId, Integer friendId) {
+        return false;
+    }
+
+    @Override
     public List<Film> recommendations(Integer id) {
         return null;
     }
@@ -79,5 +84,10 @@ public class InMemoryUserStorage implements UserStorage {
             log.info("Пользователь не найден с ID - {}", user.getId());
             throw new NotFoundException(String.format("Пользователя с id-\"%d\" не существует.", user.getId()));
         }
+    }
+
+    @Override
+    public boolean exists(int id) {
+        return false;
     }
 }
