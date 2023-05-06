@@ -32,13 +32,12 @@ public class UserService {
         return userStorage.update(user);
     }
 
-    public User deleteFriend(Integer id, Integer friendId) {
-        User user = userStorage.find(id);
+    public User deleteFriend(Integer userId, Integer friendId) {
+        User user = userStorage.find(userId);
         User friend = userStorage.find(friendId);
 
-        user.deleteFriend(friendId);
-        friend.deleteFriend(id);
-        return userStorage.update(user);
+        userStorage.deleteFriend(userId, friendId);
+        return userStorage.find(userId);
     }
 
     public List<User> findFriends(Integer id) {

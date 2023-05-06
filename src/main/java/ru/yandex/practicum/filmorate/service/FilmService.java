@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.DirectorsStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,24 +18,32 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
+    private final DirectorsStorage directorsStorage;
+
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage, DirectorsStorage directorsStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.directorsStorage = directorsStorage;
     }
 
-    public Film addLike(Integer filmId, Integer userId) {
-        Film film = filmStorage.find(filmId);
-        User user = userStorage.find(userId);
-        Set<Integer> filmLikesId = film.getLikes();
-        filmLikesId.add(userId);
-        film.setLikes(filmLikesId);
-        return filmStorage.update(film);
+    public void addLike(Integer filmId, Integer userId) {
+        if (!filmStorage.exists(filmId)) {
+            throw new NotFoundException(String.format("Фильма с id-%d не существует.", filmId));
+        }
+        if (!userStorage.exists(userId)) {
+            throw new NotFoundException(String.format("Пользователь с id-%d не существует.", filmId));
+        }
+        filmStorage.addLike(filmId, userId);
     }
 
     public Film deleteLike(Integer filmId, Integer userId) {
-        filmStorage.find(filmId);
-        userStorage.find(userId);
+        if (!filmStorage.exists(filmId)) {
+            throw new NotFoundException(String.format("Фильма с id-%d не существует.", filmId));
+        }
+        if (!userStorage.exists(userId)) {
+            throw new NotFoundException(String.format("Пользователь с id-%d не существует.", filmId));
+        }
         return filmStorage.deleteLikes(filmId, userId);
     }
 
@@ -70,4 +78,21 @@ public class FilmService {
     public boolean delete(Integer id) {
         return filmStorage.delete(id);
     }
+
+    public void deleteDirectorFromFilms(Integer filmId, Integer directorId) {
+        filmStorage.deleteDirectorFromFilms(filmId, directorId);
+    }
+
+    public List<Film> findFilmsByDirector(String sort, int id) {
+        if (!directorsStorage.exists(id)) {
+            throw new NotFoundException(String.format("Режиссера с id-%d не существует.", id));
+        }
+        if ("year".equals(sort)) {
+            return filmStorage.getFilmsByDirectorByReleaseDate(id);
+        } else {
+            return filmStorage.getFilmsByDirectorByLikes(id);
+        }
+    }
+
+
 }

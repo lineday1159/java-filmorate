@@ -124,7 +124,7 @@ public class ReviewDbStorage implements ReviewStorage {
         String sql = "DELETE FROM REVIEWS WHERE ID = ?";
         int updated = jdbcTemplate.update(
                 sql,
-                new Object[]{id});
+                id);
         if (updated == 0) {
             throw new NotFoundException(String.format("Обзора с id-%d не существует.", id));
         }

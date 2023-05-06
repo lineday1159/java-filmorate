@@ -23,8 +23,9 @@ public class Film {
     private Set<Genre> genres = new HashSet<>();
     private Mpa mpa;
     private Set<Integer> likes = new HashSet<>();
+    private Set<Director> directors = new HashSet<>();
 
-    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Set<Genre> genres, Mpa mpa, Set<Integer> likes) {
+    public Film(Integer id, String name, String description, LocalDate releaseDate, Integer duration, Set<Genre> genres, Mpa mpa, Set<Integer> likes, Set<Director> directors) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -33,6 +34,7 @@ public class Film {
         this.genres = genres;
         this.mpa = mpa;
         this.likes = likes;
+        this.directors = directors;
     }
 
     public void addGenre(Genre genre) {

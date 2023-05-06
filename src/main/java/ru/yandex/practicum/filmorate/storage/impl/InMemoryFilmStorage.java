@@ -79,4 +79,28 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film deleteLikes(Integer filmId, Integer userId) {
         return null;
     }
+
+    @Override
+    public void deleteDirectorFromFilms(Integer filmId, Integer directorId) {
+
+    }
+
+    @Override
+    public List<Film> getFilmsByDirectorByReleaseDate(int id) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getFilmsByDirectorByLikes(int id) {
+        return null;
+    }
+
+    @Override
+    public void addLike(Integer filmId, Integer userId) {
+    }
+
+    @Override
+    public boolean exists(int id) {
+        return false;
+    }
 }
