@@ -96,7 +96,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void addLike(Integer filmId, Integer userId) {}
+    public void addLike(Integer filmId, Integer userId) {
+    }
 
     @Override
     public boolean exists(int id) {

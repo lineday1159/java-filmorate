@@ -22,6 +22,9 @@ import java.util.Map;
 public class DirectorsDbStorage implements DirectorsStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    RowMapper<Director> rowMapper = (ResultSet resultSet, int rowNum) -> {
+        return new Director(resultSet.getInt("id"), resultSet.getString("name"));
+    };
 
     public DirectorsDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -70,8 +73,4 @@ public class DirectorsDbStorage implements DirectorsStorage {
                 "where id = ?", id);
         return directorRows.next();
     }
-
-    RowMapper<Director> rowMapper = (ResultSet resultSet, int rowNum) -> {
-        return new Director(resultSet.getInt("id"), resultSet.getString("name"));
-    };
 }

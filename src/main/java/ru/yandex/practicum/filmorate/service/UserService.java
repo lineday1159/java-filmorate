@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
-import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +36,7 @@ public class UserService {
         User user = userStorage.find(userId);
         User friend = userStorage.find(friendId);
 
-        userStorage.deleteFriend(userId,friendId);
+        userStorage.deleteFriend(userId, friendId);
         return userStorage.find(userId);
     }
 
