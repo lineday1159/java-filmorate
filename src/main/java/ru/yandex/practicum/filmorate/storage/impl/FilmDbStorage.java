@@ -260,4 +260,30 @@ public class FilmDbStorage implements FilmStorage {
         Integer userId = rs.getInt("user_id");
         return userId;
     }
+
+    @Override
+    public List<Film> findFilm(String query, List<String> by) {
+        StringBuilder sql = new StringBuilder("SELECT f.*, m.name as mpa_name, d.* " +
+                "FROM films f " +
+                "LEFT JOIN films_directors fd ON f.id = fd.film_id " +
+                "LEFT JOIN directors d ON fd.director_id = d.id " +
+                "LEFT JOIN mpa m ON f.mpa_id = m.id " +
+                "WHERE ");
+
+        if (by.size() == 1) {
+            if (by.get(0).equals("director")) {
+                sql.append("LOWER(d.name) LIKE LOWER(?)");
+            } else {
+                sql.append("LOWER(f.name) LIKE LOWER(?)");
+            }
+            return jdbcTemplate.query(sql.toString(), (rs, rowNum) -> makeFilm(rs), "%" + query + "%");
+        } else if (by.size() == 2) {
+            sql.append("(LOWER(d.name) LIKE LOWER(?) OR LOWER(f.name) LIKE LOWER(?))");
+            List<Film> result = jdbcTemplate.query(sql.toString(), (rs, rowNum) -> makeFilm(rs), "%" + query + "%",
+                    "%" + query + "%");
+            return result.stream().distinct().collect(Collectors.toList());
+        } else {
+            return findAll();
+        }
+    }
 }

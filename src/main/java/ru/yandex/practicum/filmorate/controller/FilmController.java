@@ -81,4 +81,10 @@ public class FilmController {
             throw new ValidationException("В базе отсутствует фильм по данному ID");
         }
     }
+
+    @GetMapping(value = "/films/search")
+    public List<Film> findFilm(@RequestParam(required = false) String query,
+                               @RequestParam(required = false) List<String> by) {
+        return filmService.findFilm(query, by);
+    }
 }

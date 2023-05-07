@@ -96,6 +96,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> findFilm(String query, List<String> by) {
+        return null;
+    }
+
+    @Override
     public void addLike(Integer filmId, Integer userId) {
     }
 
