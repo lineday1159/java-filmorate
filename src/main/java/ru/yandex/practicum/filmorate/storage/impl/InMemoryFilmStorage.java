@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @Qualifier("inMemoryFilmStorage")
@@ -102,6 +103,11 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void addLike(Integer filmId, Integer userId) {
+    }
+
+    @Override
+    public List<Film> findFilmsByYearGenre(Optional<Integer> genreId, Optional<Integer> year) {
+        return null;
     }
 
     @Override

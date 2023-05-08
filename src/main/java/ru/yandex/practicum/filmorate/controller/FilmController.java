@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.validation.ValidationException;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -58,11 +59,6 @@ public class FilmController {
         return filmService.deleteLike(id, userId);
     }
 
-    @GetMapping(value = "/films/popular")
-    public List<Film> findPopFilms(@RequestParam(defaultValue = "10") int count) {
-        return filmService.findPopFilms(count);
-    }
-
     @GetMapping(value = "/films/common")
     public List<Film> getCommonFilm(@RequestParam Integer userId, @RequestParam Integer friendId) {
         return filmService.findCommonFriends(userId, friendId);
@@ -71,6 +67,12 @@ public class FilmController {
     @GetMapping("/films/director/{directorId}")
     public List<Film> findFilmsByDirector(@RequestParam String sortBy, @PathVariable(required = true) int directorId) {
         return filmService.findFilmsByDirector(sortBy, directorId);
+    }
+
+    @GetMapping(value = "/films/popular")
+    public List<Film> getMostPopularFilm(@RequestParam(defaultValue = "10") Optional<Integer> count, @RequestParam Optional<Integer> genreId, @RequestParam Optional<Integer> year) {
+        log.info("Получен get запрос к эндпоинту /films/popular count={}&genreId={}&year={}", count.get(), genreId.isPresent() ? genreId.get() : "null", year.isPresent() ? year.get() : "null");
+        return filmService.findMostPopularFilms(count, genreId, year);
     }
 
     @DeleteMapping(value = "/films/{filmId}")
