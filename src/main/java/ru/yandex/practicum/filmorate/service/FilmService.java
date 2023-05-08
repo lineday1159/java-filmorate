@@ -94,5 +94,7 @@ public class FilmService {
         }
     }
 
-
+    public List<Film> findFilm(String query, List<String> by) {
+        return filmStorage.findFilm(query, by).stream().sorted(this::compare).collect(Collectors.toList());
+    }
 }
