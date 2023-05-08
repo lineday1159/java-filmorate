@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,6 +50,10 @@ public class FilmService {
 
     public List<Film> findPopFilms(Integer size) {
         return filmStorage.findAll().stream().sorted((p0, p1) -> compare(p0, p1)).limit(size).collect(Collectors.toList());
+    }
+
+    public List<Film> findMostPopularFilms(Optional<Integer> count, Optional<Integer> genreId, Optional<Integer> year) {
+        return filmStorage.findFilmsByYearGenre(genreId, year).stream().sorted((p0, p1) -> compare(p0, p1)).limit(count.get()).collect(Collectors.toList());
     }
 
     private int compare(Film p0, Film p1) {

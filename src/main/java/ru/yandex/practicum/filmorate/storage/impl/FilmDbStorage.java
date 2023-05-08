@@ -216,6 +216,29 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public List<Film> findFilmsByYearGenre(Optional<Integer> genreId, Optional<Integer> year) {
+        String sql = "select f.id id, f.name name,f.description description,\n" +
+                "f.mpa_id mpa_id, m.name as mpa_name,\n" +
+                "f.release_date release_date, f.duration as duration\n" +
+                "from films f\n" +
+                "LEFT JOIN mpa m ON m.id = f.mpa_id\n" +
+                ((genreId.isPresent()) ? "JOIN films_genres g ON g.film_id = f.id AND g.genre_id = ?\n" : "") +
+                ((year.isPresent()) ? "WHERE EXTRACT(YEAR FROM f.release_date) = ?\n" : "");
+        log.info(sql);
+        List<Film> filmCollection;
+        if (genreId.isPresent() && year.isPresent()) {
+            filmCollection = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), genreId.get(), year.get());
+        } else if (genreId.isPresent() && year.isEmpty()) {
+            filmCollection = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), genreId.get());
+        } else if (genreId.isEmpty() && year.isPresent()) {
+            filmCollection = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), year.get());
+        } else {
+            filmCollection = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs));
+        }
+        return filmCollection;
+    }
+
     private Film makeFilm(ResultSet rs) throws SQLException {
 
         Integer id = rs.getInt("id");

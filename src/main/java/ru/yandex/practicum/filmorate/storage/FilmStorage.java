@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface FilmStorage {
@@ -29,6 +30,9 @@ public interface FilmStorage {
     List<Film> getFilmsByDirectorByLikes(int id);
 
     List<Film> findFilm(String query, List<String> by);
+
+    List<Film> findFilmsByYearGenre(Optional<Integer> genreId, Optional<Integer> year);
+
 
     boolean exists(int id);
 }
