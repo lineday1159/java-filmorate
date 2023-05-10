@@ -3,8 +3,12 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.enums.Entity;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
 import ru.yandex.practicum.filmorate.storage.DirectorsStorage;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
@@ -19,13 +23,21 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
+    private final EventStorage eventStorage;
+
     private final DirectorsStorage directorsStorage;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage, DirectorsStorage directorsStorage) {
+    public FilmService(
+            @Qualifier("filmDbStorage") FilmStorage filmStorage,
+            @Qualifier("userDbStorage") UserStorage userStorage,
+            DirectorsStorage directorsStorage,
+            EventStorage eventStorage
+    ) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorsStorage = directorsStorage;
+        this.eventStorage = eventStorage;
     }
 
     public void addLike(Integer filmId, Integer userId) {
@@ -36,6 +48,14 @@ public class FilmService {
             throw new NotFoundException(String.format("Пользователь с id-%d не существует.", filmId));
         }
         filmStorage.addLike(filmId, userId);
+        eventStorage.addEvent(
+                new Event(
+                        Operation.ADD,
+                        Entity.LIKE,
+                        userId,
+                        filmId
+                )
+        );
     }
 
     public Film deleteLike(Integer filmId, Integer userId) {
@@ -45,7 +65,16 @@ public class FilmService {
         if (!userStorage.exists(userId)) {
             throw new NotFoundException(String.format("Пользователь с id-%d не существует.", filmId));
         }
-        return filmStorage.deleteLikes(filmId, userId);
+        Film delFilm = filmStorage.deleteLikes(filmId, userId);
+        eventStorage.addEvent(
+                new Event(
+                        Operation.REMOVE,
+                        Entity.LIKE,
+                        userId,
+                        filmId
+                )
+        );
+        return delFilm;
     }
 
     public List<Film> findPopFilms(Integer size) {

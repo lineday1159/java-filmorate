@@ -4,8 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.Entity;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -19,9 +23,12 @@ public class UserService {
 
     private final UserStorage userStorage;
 
+    private final EventStorage eventStorage;
+
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage inMemoryUserStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage inMemoryUserStorage, EventStorage eventStorage) {
         this.userStorage = inMemoryUserStorage;
+        this.eventStorage = eventStorage;
     }
 
     public User addFriend(Integer id, Integer friendId) {
@@ -29,6 +36,14 @@ public class UserService {
         User friend = userStorage.find(friendId);
 
         user.addFriend(friendId);
+        eventStorage.addEvent(
+                new Event(
+                        Operation.ADD,
+                        Entity.FRIEND,
+                        id,
+                        friendId
+                )
+        );
         return userStorage.update(user);
     }
 
@@ -37,6 +52,14 @@ public class UserService {
         User friend = userStorage.find(friendId);
 
         userStorage.deleteFriend(userId, friendId);
+        eventStorage.addEvent(
+                new Event(
+                        Operation.REMOVE,
+                        Entity.FRIEND,
+                        userId,
+                        friendId
+                )
+        );
         return userStorage.find(userId);
     }
 
@@ -87,5 +110,10 @@ public class UserService {
 
     public List<Film> recommendations(Integer id) {
         return userStorage.recommendations(id);
+    }
+
+    public List<Event> getUserFeed(int userId) {
+        userStorage.find(userId);
+        return eventStorage.getUserFeed(userId);
     }
 }
