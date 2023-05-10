@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.model.enums.Entity;
@@ -15,10 +16,10 @@ import java.time.Instant;
 @AllArgsConstructor
 public class Event {
 
-    private Integer eventTd = 0;
+    private Integer eventId = 0;
 
     @NotNull
-    private Timestamp timestamp;
+    private Long timestamp;
 
     @NotNull
     private Operation operation;
@@ -42,7 +43,7 @@ public class Event {
             throw new ValidationException("Некорректная сущность");
         }
         // Прямо в конструкторе зададим таймстамп
-        this.timestamp = Timestamp.from(Instant.now());
+        this.timestamp = Instant.now().toEpochMilli();
         this.operation = operation;
         this.eventType = entity;
         this.entityId = entityId;

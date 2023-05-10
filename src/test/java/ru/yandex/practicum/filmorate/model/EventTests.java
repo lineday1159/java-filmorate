@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -33,7 +34,7 @@ public class EventTests {
         // All args constructor
         assertDoesNotThrow(() -> {new Event(
                 1,
-                Timestamp.from(Instant.now()),
+                Instant.now().toEpochMilli(),
                 Operation.ADD,
                 Entity.LIKE,
                 1,
@@ -68,7 +69,7 @@ public class EventTests {
     void eventUpdateingTest() {
         Event testEvent = new Event(
                 1,
-                Timestamp.from(Instant.now()),
+                Instant.now().toEpochMilli(),
                 Operation.ADD,
                 Entity.LIKE,
                 1,

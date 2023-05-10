@@ -16,6 +16,8 @@ import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,18 +35,18 @@ public class EventDbStrorage implements EventStorage {
         log.trace("Level: Storage. Class EventDbStrorage. Call of addEvent method");
         SimpleJdbcInsert smplIns = new SimpleJdbcInsert(jdbcTemplate);
         Map<String, Object> values = new HashMap<>();
-        values.put("event_timestamp", event.getTimestamp());
+        values.put("event_timestamp", Timestamp.from(Instant.ofEpochMilli(event.getTimestamp())));
         values.put("event_type", event.getEventType());
         values.put("operation", event.getOperation());
         values.put("entity_id", event.getEntityId());
         values.put("user_id", event.getUserId());
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("event_log")
+                .withTableName("events_log")
                 .usingGeneratedKeyColumns("id");
         try {
             int id = simpleJdbcInsert.executeAndReturnKey(values).intValue();
             if (id > 0) {
-                event.setEventTd(id);
+                event.setEventId(id);
             } else {
                 throw new ValidationException("Событие в журнал не добавлено. Ошибка валидации записи");
             }
@@ -68,7 +70,7 @@ public class EventDbStrorage implements EventStorage {
         public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new Event(
                     rs.getInt("id"),
-                    rs.getTimestamp("event_timestamp"),
+                    rs.getTimestamp("event_timestamp").toInstant().toEpochMilli(),
                     Operation.valueOf(rs.getString("operation")),
                     Entity.valueOf(rs.getString("event_type")),
                     rs.getInt("user_id"),

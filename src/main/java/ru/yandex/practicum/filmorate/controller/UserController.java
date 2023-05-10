@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -30,6 +31,11 @@ public class UserController {
     @GetMapping("/users/{id}")
     public User find(@PathVariable Integer id) {
         return userService.find(id);
+    }
+
+    @GetMapping("/users/{id}/feed")
+    public List<Event> getUserFeed(@PathVariable Integer id) {
+        return userService.getUserFeed(id);
     }
 
     @PostMapping(value = "/users")

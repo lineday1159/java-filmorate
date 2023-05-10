@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS events_log (
     event_timestamp TIMESTAMP NOT NULL,
     operation CHARACTER VARYING NOT NULL,
     event_type CHARACTER VARYING NOT NULL,
-    userId INTEGER REFERENCES users (id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users (id) ON DELETE CASCADE,
     entity_id INTEGER NOT NULL
 );
 

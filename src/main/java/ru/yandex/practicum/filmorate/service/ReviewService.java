@@ -3,7 +3,11 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.model.enums.Entity;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
@@ -17,6 +21,9 @@ public class ReviewService {
     @Autowired
     private final ReviewStorage reviewStorage;
 
+    @Autowired
+    private final EventStorage eventStorage;
+
     public List<Review> findFilmReviews(int filmId, int count) {
         return reviewStorage.findFilmReviews(filmId, count);
     }
@@ -26,6 +33,14 @@ public class ReviewService {
             throw new ValidationException("Напишите обЗор");
         review = reviewStorage.create(review);
         review.setUseful(0);
+        eventStorage.addEvent(
+                new Event(
+                        Operation.ADD,
+                        Entity.REVIEW,
+                        review.getUserId(),
+                        review.getReviewId()
+                )
+        );
         return review;
     }
 
@@ -38,11 +53,29 @@ public class ReviewService {
             throw new NotFoundException(
                     String.format("Обзора с id-%d не существует.", review.getReviewId())
             );
-        return reviewStorage.update(review);
+        Review forUpdate = reviewStorage.update(review);
+        eventStorage.addEvent(
+                new Event(
+                        Operation.UPDATE,
+                        Entity.REVIEW,
+                        review.getUserId(),
+                        review.getReviewId()
+                )
+        );
+        return forUpdate;
     }
 
     public void delete(int id) {
+        int reviewUser = reviewStorage.find(id).getUserId();
         reviewStorage.delete(id);
+        eventStorage.addEvent(
+                new Event(
+                        Operation.REMOVE,
+                        Entity.REVIEW,
+                        reviewUser,
+                        reviewUser
+                )
+        );
     }
 
     public void likeReview(int userId, int reviewId) {
