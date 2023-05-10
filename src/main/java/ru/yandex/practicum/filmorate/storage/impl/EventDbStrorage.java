@@ -33,18 +33,17 @@ public class EventDbStrorage implements EventStorage {
     @Override
     public void addEvent(Event event) {
         log.trace("Level: Storage. Class EventDbStrorage. Call of addEvent method");
-        SimpleJdbcInsert smplIns = new SimpleJdbcInsert(jdbcTemplate);
         Map<String, Object> values = new HashMap<>();
         values.put("event_timestamp", Timestamp.from(Instant.ofEpochMilli(event.getTimestamp())));
         values.put("event_type", event.getEventType());
         values.put("operation", event.getOperation());
         values.put("entity_id", event.getEntityId());
         values.put("user_id", event.getUserId());
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        SimpleJdbcInsert smplIns = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("events_log")
                 .usingGeneratedKeyColumns("id");
         try {
-            int id = simpleJdbcInsert.executeAndReturnKey(values).intValue();
+            int id = smplIns.executeAndReturnKey(values).intValue();
             if (id > 0) {
                 event.setEventId(id);
             } else {
@@ -73,8 +72,8 @@ public class EventDbStrorage implements EventStorage {
                     rs.getTimestamp("event_timestamp").toInstant().toEpochMilli(),
                     Operation.valueOf(rs.getString("operation")),
                     Entity.valueOf(rs.getString("event_type")),
-                    rs.getInt("user_id"),
-                    rs.getInt("entity_id")
+                    rs.getInt("entity_id"),
+                    rs.getInt("user_id")
             );
         }
     }

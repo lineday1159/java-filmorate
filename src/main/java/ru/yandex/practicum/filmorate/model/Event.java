@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.model.enums.Entity;
@@ -9,7 +8,6 @@ import ru.yandex.practicum.filmorate.validation.ValidationException;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.sql.Timestamp;
 import java.time.Instant;
 
 @Data

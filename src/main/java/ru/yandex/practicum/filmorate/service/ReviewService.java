@@ -51,15 +51,15 @@ public class ReviewService {
     public Review update(Review review) {
         if (review.getReviewId() == null)
             throw new NotFoundException(
-                    String.format("Обзора с id-%d не существует.", review.getReviewId())
+                    String.format("Обзора с id-%d не существует.", null)
             );
         Review forUpdate = reviewStorage.update(review);
         eventStorage.addEvent(
                 new Event(
                         Operation.UPDATE,
                         Entity.REVIEW,
-                        review.getUserId(),
-                        review.getReviewId()
+                        forUpdate.getUserId(),
+                        forUpdate.getReviewId()
                 )
         );
         return forUpdate;
@@ -73,7 +73,7 @@ public class ReviewService {
                         Operation.REMOVE,
                         Entity.REVIEW,
                         reviewUser,
-                        reviewUser
+                        id
                 )
         );
     }
