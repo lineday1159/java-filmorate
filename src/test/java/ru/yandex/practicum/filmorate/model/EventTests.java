@@ -6,9 +6,7 @@ import ru.yandex.practicum.filmorate.model.enums.Entity;
 import ru.yandex.practicum.filmorate.model.enums.Operation;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
-import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
@@ -32,7 +30,8 @@ public class EventTests {
     void eventCreationTest() {
 
         // All args constructor
-        assertDoesNotThrow(() -> {new Event(
+        assertDoesNotThrow(() -> {
+            new Event(
                 1,
                 Instant.now().toEpochMilli(),
                 Operation.ADD,
@@ -44,7 +43,8 @@ public class EventTests {
 
         // Custom constructor
         assertDoesNotThrow(
-                () -> {new Event(
+                () -> {
+                    new Event(
                         Operation.UPDATE,
                         Entity.FRIEND,
                         1,
