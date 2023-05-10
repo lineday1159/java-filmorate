@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Event;
@@ -59,23 +58,19 @@ public class EventDbStrorage implements EventStorage {
         log.trace("Layer: Storage. Class EventDbStrorage. Call of getUserFeed");
         String sql = "SELECT * FROM events_log WHERE user_id = ?";
         return jdbcTemplate.query(sql,
-                new Object[]{userId},
-                new EventRowMapper());
+                (rs, rowNum) -> makeEvent(rs), userId);
     }
 
-    private class EventRowMapper implements RowMapper<Event> {
-
-        @Override
-        public Event mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return new Event(
-                    rs.getInt("id"),
-                    rs.getTimestamp("event_timestamp").toInstant().toEpochMilli(),
-                    Operation.valueOf(rs.getString("operation")),
-                    Entity.valueOf(rs.getString("event_type")),
-                    rs.getInt("entity_id"),
-                    rs.getInt("user_id")
-            );
-        }
+    private Event makeEvent(ResultSet rs) throws SQLException {
+        return new Event(
+                rs.getInt("id"),
+                rs.getTimestamp("event_timestamp").toInstant().toEpochMilli(),
+                Operation.valueOf(rs.getString("operation")),
+                Entity.valueOf(rs.getString("event_type")),
+                rs.getInt("entity_id"),
+                rs.getInt("user_id")
+        );
     }
+
 
 }
