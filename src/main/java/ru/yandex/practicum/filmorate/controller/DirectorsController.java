@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,40 +13,38 @@ import java.util.List;
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
+@RequestMapping("/directors")
 public class DirectorsController {
-
+    @Autowired
     private final DirectorsService service;
 
-    @Autowired
-    public DirectorsController(DirectorsService service) {
-        this.service = service;
-    }
-
-    @GetMapping("/directors")
-    public List<Director> findAll() {
+    @GetMapping
+    public List<Director> findAll(HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.findAll();
     }
 
-    @GetMapping("/directors/{id}")
-    public Director find(@PathVariable int id) {
+    @GetMapping("/{id}")
+    public Director find(@PathVariable int id, HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.find(id);
     }
 
-    @PostMapping(value = "/directors")
+    @PostMapping
     Director create(@Valid @RequestBody Director director, HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
-        log.info("Получен post запрос к эндпоинту /films: '{}'", director.toString());
         return service.create(director);
     }
 
-    @PutMapping(value = "/directors")
+    @PutMapping
     Director update(@Valid @RequestBody Director director, HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         service.update(director);
         return director;
     }
 
-    @DeleteMapping("/directors/{id}")
+    @DeleteMapping("/{id}")
     void delete(@PathVariable int id, HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         service.delete(id);

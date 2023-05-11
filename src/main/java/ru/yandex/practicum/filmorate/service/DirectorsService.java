@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.impl.DirectorsDbStorage;
@@ -10,17 +10,12 @@ import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DirectorsService {
-
-    private final DirectorsDbStorage storage;
-
-    private final FilmService filmService;
-
     @Autowired
-    public DirectorsService(@Qualifier("directorsDbStorage") DirectorsDbStorage storage, FilmService filmService) {
-        this.storage = storage;
-        this.filmService = filmService;
-    }
+    private final DirectorsDbStorage storage;
+    @Autowired
+    private final FilmService filmService;
 
     public Director create(Director director) {
         director.setId(storage.create(director));

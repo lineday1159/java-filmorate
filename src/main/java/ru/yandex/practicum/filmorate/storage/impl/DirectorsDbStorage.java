@@ -1,7 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -18,17 +19,10 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@Qualifier("directorsDbStorage")
+@RequiredArgsConstructor
 public class DirectorsDbStorage implements DirectorsStorage {
-
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
-    RowMapper<Director> rowMapper = (ResultSet resultSet, int rowNum) -> {
-        return new Director(resultSet.getInt("id"), resultSet.getString("name"));
-    };
-
-    public DirectorsDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public int create(Director director) {
@@ -73,4 +67,8 @@ public class DirectorsDbStorage implements DirectorsStorage {
                 "where id = ?", id);
         return directorRows.next();
     }
+
+    RowMapper<Director> rowMapper = (ResultSet resultSet, int rowNum) -> {
+        return new Director(resultSet.getInt("id"), resultSet.getString("name"));
+    };
 }

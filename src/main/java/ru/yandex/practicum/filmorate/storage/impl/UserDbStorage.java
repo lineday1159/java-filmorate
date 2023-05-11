@@ -1,8 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -24,19 +25,14 @@ import java.util.Map;
 
 @Component
 @Primary
-@Qualifier("userDbStorage")
+@RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
 
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
-
+    @Autowired
     private final FilmStorage filmStorage;
-
-    public UserDbStorage(JdbcTemplate jdbcTemplate, FilmStorage filmStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.filmStorage = filmStorage;
-    }
 
     @Override
     public boolean exists(int id) {

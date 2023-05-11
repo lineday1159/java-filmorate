@@ -17,7 +17,7 @@ public interface FilmStorage {
 
     boolean delete(Integer id);
 
-    Film deleteLikes(Integer filmId, Integer userId);
+    Film deleteLike(Integer filmId, Integer userId);
 
     void addLike(Integer filmId, Integer userId);
 
