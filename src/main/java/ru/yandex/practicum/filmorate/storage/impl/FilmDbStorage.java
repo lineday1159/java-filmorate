@@ -123,7 +123,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void addLike(Integer filmId, Integer userId) {
-        jdbcTemplate.update("insert into films_likes(film_id, user_id) values (?, ?)", filmId, userId);
+        String sqlQuery = "insert into films_likes(film_id, user_id)\n" +
+                "SELECT ?,? FROM dual\n" +
+                "where not exists (select * from films_likes where film_id = ? AND user_id=?)";
+        jdbcTemplate.update(sqlQuery, filmId, userId, filmId, userId);
     }
 
     @Override
