@@ -6,11 +6,11 @@ import ru.yandex.practicum.filmorate.model.enums.Entity;
 import ru.yandex.practicum.filmorate.model.enums.Operation;
 import ru.yandex.practicum.filmorate.validation.ValidationException;
 
-import java.time.Instant;
-import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.time.Instant;
+import java.util.Set;
 
 import static javax.validation.Validation.buildDefaultValidatorFactory;
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,12 +32,12 @@ public class EventTests {
         // All args constructor
         assertDoesNotThrow(() -> {
             new Event(
-                1,
-                Instant.now().toEpochMilli(),
-                Operation.ADD,
-                Entity.LIKE,
-                1,
-                1
+                    1,
+                    Instant.now().toEpochMilli(),
+                    Operation.ADD,
+                    Entity.LIKE,
+                    1,
+                    1
             );
         });
 
@@ -45,22 +45,22 @@ public class EventTests {
         assertDoesNotThrow(
                 () -> {
                     new Event(
-                        Operation.UPDATE,
-                        Entity.FRIEND,
-                        1,
-                        1
-                );
-            }
+                            Operation.UPDATE,
+                            Entity.FRIEND,
+                            1,
+                            1
+                    );
+                }
         );
 
-        assertThrows(ValidationException.class, () ->  {
-                new Event(null, null, 0, 0);
-            }
+        assertThrows(ValidationException.class, () -> {
+                    new Event(null, null, 0, 0);
+                }
         );
 
         Set<ConstraintViolation<Event>> violation = validator.validate(
-                    new Event(1, null, null, null, 0, 0)
-                );
+                new Event(1, null, null, null, 0, 0)
+        );
         assertFalse(violation.isEmpty());
 
     }

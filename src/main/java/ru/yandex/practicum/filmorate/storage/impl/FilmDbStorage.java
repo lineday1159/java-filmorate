@@ -1,8 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -23,16 +24,13 @@ import java.util.stream.Collectors;
 
 @Component
 @Primary
-@Qualifier("filmDbStorage")
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
 
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
 
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public boolean exists(int id) {
@@ -129,7 +127,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film deleteLikes(Integer filmId, Integer userId) {
+    public Film deleteLike(Integer filmId, Integer userId) {
         jdbcTemplate.update("delete from films_likes where film_id = ? and user_id = ?", filmId, userId);
         return find(filmId);
     }

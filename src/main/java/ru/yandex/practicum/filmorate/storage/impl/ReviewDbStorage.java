@@ -28,13 +28,10 @@ import java.util.Map;
 public class ReviewDbStorage implements ReviewStorage {
 
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-
     @Autowired
     private final JdbcTemplate jdbcTemplate;
-
     @Autowired
     private final UserStorage userStorage;
-
     @Autowired
     private final FilmStorage filmStorage;
 
@@ -107,11 +104,9 @@ public class ReviewDbStorage implements ReviewStorage {
                 + "WHERE ID = ?";
         int updated = jdbcTemplate.update(
                 sql,
-                new Object[]{
-                        review.getContent(),
-                        review.getIsPositive(),
-                        review.getReviewId()
-                });
+                review.getContent(),
+                review.getIsPositive(),
+                review.getReviewId());
         if (updated == 0) {
             throw new NotFoundException(String.format("Обзора с id-%d не существует.", review.getReviewId()));
         }

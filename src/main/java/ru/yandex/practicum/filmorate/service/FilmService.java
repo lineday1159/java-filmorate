@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -18,27 +18,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
-
+    @Autowired
     private final FilmStorage filmStorage;
+    @Autowired
     private final UserStorage userStorage;
-
+    @Autowired
     private final EventStorage eventStorage;
-
+    @Autowired
     private final DirectorsStorage directorsStorage;
 
-    @Autowired
-    public FilmService(
-            @Qualifier("filmDbStorage") FilmStorage filmStorage,
-            @Qualifier("userDbStorage") UserStorage userStorage,
-            DirectorsStorage directorsStorage,
-            EventStorage eventStorage
-    ) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-        this.directorsStorage = directorsStorage;
-        this.eventStorage = eventStorage;
-    }
 
     public void addLike(Integer filmId, Integer userId) {
         if (!filmStorage.exists(filmId)) {
@@ -65,7 +55,7 @@ public class FilmService {
         if (!userStorage.exists(userId)) {
             throw new NotFoundException(String.format("Пользователь с id-%d не существует.", filmId));
         }
-        Film delFilm = filmStorage.deleteLikes(filmId, userId);
+        Film delFilm = filmStorage.deleteLike(filmId, userId);
         eventStorage.addEvent(
                 new Event(
                         Operation.REMOVE,

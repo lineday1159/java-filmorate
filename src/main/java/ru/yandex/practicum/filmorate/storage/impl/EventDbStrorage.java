@@ -27,11 +27,10 @@ import java.util.Map;
 public class EventDbStrorage implements EventStorage {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void addEvent(Event event) {
-        log.trace("Level: Storage. Class EventDbStrorage. Call of addEvent method");
         Map<String, Object> values = new HashMap<>();
         values.put("event_timestamp", Timestamp.from(Instant.ofEpochMilli(event.getTimestamp())));
         values.put("event_type", event.getEventType());
@@ -55,7 +54,6 @@ public class EventDbStrorage implements EventStorage {
 
     @Override
     public List<Event> getUserFeed(int userId) {
-        log.trace("Layer: Storage. Class EventDbStrorage. Call of getUserFeed");
         String sql = "SELECT * FROM events_log WHERE user_id = ?";
         return jdbcTemplate.query(sql,
                 (rs, rowNum) -> makeEvent(rs), userId);

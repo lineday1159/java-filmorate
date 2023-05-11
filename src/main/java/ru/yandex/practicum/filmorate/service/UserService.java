@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -18,18 +17,12 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class UserService {
-
-    private final UserStorage userStorage;
-
-    private final EventStorage eventStorage;
-
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage inMemoryUserStorage, EventStorage eventStorage) {
-        this.userStorage = inMemoryUserStorage;
-        this.eventStorage = eventStorage;
-    }
+    private final UserStorage userStorage;
+    @Autowired
+    private final EventStorage eventStorage;
 
     public User addFriend(Integer id, Integer friendId) {
         User user = userStorage.find(id);
