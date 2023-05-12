@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
@@ -51,11 +50,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public boolean deleteFriend(Integer userId, Integer friendId) {
         return false;
-    }
-
-    @Override
-    public List<Film> recommendations(Integer id) {
-        return null;
     }
 
     @Override

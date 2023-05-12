@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.enums.Entity;
 import ru.yandex.practicum.filmorate.model.enums.Operation;
 import ru.yandex.practicum.filmorate.storage.EventStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class UserService {
     private final UserStorage userStorage;
     @Autowired
     private final EventStorage eventStorage;
+    @Autowired
+    private final FilmStorage filmStorage;
 
     public User addFriend(Integer id, Integer friendId) {
         User user = userStorage.find(id);
@@ -102,7 +105,7 @@ public class UserService {
     }
 
     public List<Film> recommendations(Integer id) {
-        return userStorage.recommendations(id);
+        return filmStorage.recommendations(id);
     }
 
     public List<Event> getUserFeed(int userId) {

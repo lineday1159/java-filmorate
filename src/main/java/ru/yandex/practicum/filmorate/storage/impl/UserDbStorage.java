@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -125,34 +124,6 @@ public class UserDbStorage implements UserStorage {
     public boolean deleteFriend(Integer userId, Integer friendId) {
         String sqlQuery = "delete from friendships where user_id = ? and friend_id = ?";
         return jdbcTemplate.update(sqlQuery, userId, friendId) > 0;
-    }
-
-    @Override
-    public List<Film> recommendations(Integer id) {
-        String sql = "SELECT f.* " +
-                "FROM films f " +
-                "WHERE f.id IN (" +
-                "SELECT film_id " +
-                "FROM films_likes " +
-                "WHERE user_id = (" +
-                "SELECT u.id " +
-                "FROM users u " +
-                "WHERE u.id <> ? " +
-                "ORDER BY (" +
-                "SELECT COUNT(*) " +
-                "FROM films_likes fl1 " +
-                "JOIN films_likes fl2 ON fl1.film_id = fl2.film_id " +
-                "WHERE fl1.user_id = ? AND fl2.user_id = u.id " +
-                ") DESC " +
-                "LIMIT 1" +
-                ") " +
-                "EXCEPT " +
-                "SELECT film_id " +
-                "FROM films_likes " +
-                "WHERE user_id = ?" +
-                ")";
-        return jdbcTemplate.query(sql, new Object[]{id, id, id},
-                (rs, rowNum) -> filmStorage.find(rs.getInt("id")));
     }
 
     private User makeUser(ResultSet rs) throws SQLException {

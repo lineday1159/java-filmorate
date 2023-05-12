@@ -51,11 +51,6 @@ public class ReviewDbStorage implements ReviewStorage {
     @Override
     public Review create(@Valid Review review) {
         log.trace("Layer: Storage. Call of create review");
-        /*
-            Как-то так, ошибку от sql пока по-человечески не разобрать.
-            При попытке закинуть с некорректными id он выдаёт ошибку и
-            всё равно увеличивает инкремент, и тесты не проходят.
-        */
         userStorage.find(review.getUserId());
         filmStorage.find(review.getFilmId());
         Map<String, Object> values = new HashMap<>();

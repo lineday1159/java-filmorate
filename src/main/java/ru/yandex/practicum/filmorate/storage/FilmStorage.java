@@ -33,6 +33,7 @@ public interface FilmStorage {
 
     List<Film> findFilmsByYearGenre(Optional<Integer> genreId, Optional<Integer> year);
 
+    List<Film> recommendations(Integer id);
 
     boolean exists(int id);
 }

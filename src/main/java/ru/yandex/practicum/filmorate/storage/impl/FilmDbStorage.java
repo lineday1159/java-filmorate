@@ -240,8 +240,30 @@ public class FilmDbStorage implements FilmStorage {
         return filmCollection;
     }
 
-    private Film makeFilm(ResultSet rs) throws SQLException {
+    @Override
+    public List<Film> recommendations(Integer id) {
+        String sql = "WITH similar_user AS ( " +
+                "SELECT COUNT(*) AS film_count, fl1.user_id AS main_user_id, fl2.user_id AS friend_id " +
+                "FROM films_likes fl1 " +
+                "JOIN films_likes fl2 ON (fl1.film_id = fl2.film_id AND fl2.user_id != fl1.user_id) " +
+                "GROUP BY friend_id, main_user_id), " +
+                "most_similar_user AS ( " +
+                "SELECT MAX(film_count), friend_id, main_user_id " +
+                "FROM similar_user " +
+                "GROUP BY friend_id, main_user_id) " +
+                "select f.id id, f.name name,f.description description, " +
+                "f.mpa_id mpa_id, m.name as mpa_name, " +
+                "f.release_date release_date, f.duration as duration " +
+                "FROM most_similar_user msu " +
+                "JOIN films_likes fl ON fl.user_id = msu.friend_id " +
+                "JOIN films f ON f.id  = fl.film_id " +
+                "LEFT JOIN mpa m ON m.id = f.mpa_id " +
+                "LEFT JOIN films_likes fl_except ON (fl_except.film_id = fl.film_id AND fl_except.user_id = ?) " +
+                "WHERE fl_except.FILM_ID IS NULL AND msu.main_user_id = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs), id, id);
+    }
 
+    private Film makeFilm(ResultSet rs) throws SQLException {
         Integer id = rs.getInt("id");
         String name = rs.getString("name");
         String description = rs.getString("description");

@@ -112,4 +112,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public boolean exists(int id) {
         return false;
     }
+
+    @Override
+    public List<Film> recommendations(Integer id) {
+        return null;
+    }
 }
