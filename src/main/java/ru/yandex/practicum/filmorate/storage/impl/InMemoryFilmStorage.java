@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -10,9 +9,9 @@ import ru.yandex.practicum.filmorate.validation.NotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Component
-@Qualifier("inMemoryFilmStorage")
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private final HashMap<Integer, Film> films;
@@ -68,5 +67,54 @@ public class InMemoryFilmStorage implements FilmStorage {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public List<Film> findCommonFilms(Integer userId, Integer friendId) {
+        return null;
+    }
+
+    @Override
+    public Film deleteLike(Integer filmId, Integer userId) {
+        return null;
+    }
+
+    @Override
+    public void deleteDirectorFromFilms(Integer filmId, Integer directorId) {
+
+    }
+
+    @Override
+    public List<Film> getFilmsByDirectorByReleaseDate(int id) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getFilmsByDirectorByLikes(int id) {
+        return null;
+    }
+
+    @Override
+    public List<Film> findFilm(String query, List<String> by) {
+        return null;
+    }
+
+    @Override
+    public void addLike(Integer filmId, Integer userId) {
+    }
+
+    @Override
+    public List<Film> findFilmsByYearGenre(Optional<Integer> genreId, Optional<Integer> year) {
+        return null;
+    }
+
+    @Override
+    public boolean exists(int id) {
+        return false;
+    }
+
+    @Override
+    public List<Film> recommendations(Integer id) {
+        return null;
     }
 }

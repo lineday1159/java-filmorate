@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -13,15 +15,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
 
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
-
-    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<Mpa> findAll() {

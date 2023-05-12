@@ -1,12 +1,16 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.validation.NotFoundException;
 
@@ -19,15 +23,21 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@Qualifier("userDbStorage")
+@Primary
+@RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
 
     private final Logger log = LoggerFactory.getLogger(FilmDbStorage.class);
-
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
+    @Autowired
+    private final FilmStorage filmStorage;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    @Override
+    public boolean exists(int id) {
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("select id from users " +
+                "where id = ?", id);
+        return userRows.next();
     }
 
     @Override
@@ -106,11 +116,14 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public boolean delete(Integer id) {
-        String sqlQuery = "delete from mpa where id = ?";
-        jdbcTemplate.update(sqlQuery, id);
-
-        sqlQuery = "delete from mpa where id = ?";
+        String sqlQuery = "delete from users where id = ?";
         return jdbcTemplate.update(sqlQuery, id) > 0;
+    }
+
+    @Override
+    public boolean deleteFriend(Integer userId, Integer friendId) {
+        String sqlQuery = "delete from friendships where user_id = ? and friend_id = ?";
+        return jdbcTemplate.update(sqlQuery, userId, friendId) > 0;
     }
 
     private User makeUser(ResultSet rs) throws SQLException {

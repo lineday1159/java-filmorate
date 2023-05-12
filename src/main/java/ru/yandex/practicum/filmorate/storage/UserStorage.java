@@ -14,4 +14,8 @@ public interface UserStorage {
     User find(Integer id);
 
     boolean delete(Integer id);
+
+    boolean deleteFriend(Integer userId, Integer friendId);
+
+    boolean exists(int id);
 }

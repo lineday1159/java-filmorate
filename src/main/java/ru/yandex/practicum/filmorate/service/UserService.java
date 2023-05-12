@@ -1,10 +1,15 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.enums.Entity;
+import ru.yandex.practicum.filmorate.model.enums.Operation;
+import ru.yandex.practicum.filmorate.storage.EventStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
@@ -13,31 +18,45 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
 public class UserService {
-
-    private final UserStorage userStorage;
-
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage inMemoryUserStorage) {
-        this.userStorage = inMemoryUserStorage;
-    }
+    private final UserStorage userStorage;
+    @Autowired
+    private final EventStorage eventStorage;
+    @Autowired
+    private final FilmStorage filmStorage;
 
     public User addFriend(Integer id, Integer friendId) {
         User user = userStorage.find(id);
         User friend = userStorage.find(friendId);
 
         user.addFriend(friendId);
+        eventStorage.addEvent(
+                new Event(
+                        Operation.ADD,
+                        Entity.FRIEND,
+                        id,
+                        friendId
+                )
+        );
         return userStorage.update(user);
     }
 
-    public User deleteFriend(Integer id, Integer friendId) {
-        User user = userStorage.find(id);
+    public User deleteFriend(Integer userId, Integer friendId) {
+        User user = userStorage.find(userId);
         User friend = userStorage.find(friendId);
 
-        user.deleteFriend(friendId);
-        friend.deleteFriend(id);
-        return userStorage.update(user);
+        userStorage.deleteFriend(userId, friendId);
+        eventStorage.addEvent(
+                new Event(
+                        Operation.REMOVE,
+                        Entity.FRIEND,
+                        userId,
+                        friendId
+                )
+        );
+        return userStorage.find(userId);
     }
 
     public List<User> findFriends(Integer id) {
@@ -73,7 +92,6 @@ public class UserService {
         return userStorage.find(id);
     }
 
-
     public User create(User user) {
         return userStorage.create(user);
     }
@@ -82,4 +100,16 @@ public class UserService {
         return userStorage.update(user);
     }
 
+    public boolean delete(Integer id) {
+        return userStorage.delete(id);
+    }
+
+    public List<Film> recommendations(Integer id) {
+        return filmStorage.recommendations(id);
+    }
+
+    public List<Event> getUserFeed(int userId) {
+        userStorage.find(userId);
+        return eventStorage.getUserFeed(userId);
+    }
 }
